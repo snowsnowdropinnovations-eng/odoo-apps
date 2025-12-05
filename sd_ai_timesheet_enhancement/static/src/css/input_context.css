@@ -1,0 +1,233 @@
+/* Base context menu styling */
+.otoolkit_text_enhancer_context_menu {
+  position: fixed;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 100000;
+  min-width: 200px;
+  font-size: 13px;
+}
+
+/* Menu items styling */
+.otoolkit_text_enhancer_context_menu .o_menu_item {
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  border-radius: 4px;
+}
+
+.otoolkit_text_enhancer_context_menu .o_menu_item:hover {
+  background-color: #f5f5f5;
+}
+
+.otoolkit_text_enhancer_context_menu .o_menu_item .fa {
+  width: 16px;
+}
+
+.otoolkit_text_enhancer_context_menu .o_menu_item span {
+  flex-grow: 1;
+}
+
+/* Separator styling */
+.otoolkit_text_enhancer_context_menu .o_menu_separator {
+  height: 1px;
+  background-color: #ddd;
+  margin: 4px 0;
+}
+
+/* Submenu styling */
+.otoolkit_text_enhancer_context_menu .o_submenu {
+  position: absolute;
+  display: none;
+  min-width: 200px;
+}
+
+.otoolkit_text_enhancer_context_menu .o_menu_item:hover > .o_submenu {
+  display: block;
+}
+
+/* Reverse submenu (opens to the left) */
+.otoolkit_text_enhancer_context_menu .o_submenu.revert {
+  right: auto;
+  left: 100%;
+}
+
+/* Subpage styling */
+.otoolkit_text_enhancer_context_menu .o_subpage {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  width: 300px;
+  padding: 15px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  display: none;
+}
+
+.otoolkit_text_enhancer_context_menu .o_menu_item:hover > .o_subpage {
+  display: block;
+}
+
+.otoolkit_text_enhancer_context_menu .o_subpage h3 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  color: #2b2b2b;
+  font-weight: 500;
+}
+
+.otoolkit_text_enhancer_context_menu .o_subpage_description {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.otoolkit_text_enhancer_context_menu .o_subpage_textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  resize: vertical;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.otoolkit_text_enhancer_context_menu .o_subpage_textarea:focus {
+  outline: none;
+  border-color: #7c7bad;
+  box-shadow: 0 0 0 2px rgba(124, 123, 173, 0.2);
+}
+
+.otoolkit_text_enhancer_context_menu .o_subpage_button {
+  background-color: #7c7bad;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  width: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.otoolkit_text_enhancer_context_menu .o_subpage_button:hover {
+  background-color: #6c6a9a;
+}
+
+.otoolkit_text_enhancer_context_menu .o_subpage_button:active {
+  background-color: #5c5a8a;
+}
+
+/* Position adjustments for menu near screen edges */
+.otoolkit_text_enhancer_context_menu.edge-right .o_submenu,
+.otoolkit_text_enhancer_context_menu.edge-right .o_subpage {
+  left: auto;
+  right: 100%;
+}
+
+.otoolkit_text_enhancer_context_menu.edge-bottom {
+  bottom: 0;
+}
+
+/* Animation for menu appearance */
+.otoolkit_text_enhancer_context_menu {
+  animation: otoolkitEnhancerMenuFadeIn 0.1s ease;
+}
+
+@keyframes otoolkitEnhancerMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Disabled state for menu items */
+.otoolkit_text_enhancer_context_menu .o_menu_item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.otoolkit_text_enhancer_context_menu .o_menu_item.disabled:hover {
+  background-color: transparent;
+}
+
+/* Icons in menu items */
+.otoolkit_text_enhancer_context_menu .o_menu_item i {
+  color: #666;
+  font-size: 14px;
+  width: 20px;
+  text-align: center;
+}
+
+/* Hover states */
+.otoolkit_text_enhancer_context_menu .o_menu_item:hover i {
+  color: #7c7bad;
+}
+
+/* Focus states for accessibility */
+.otoolkit_text_enhancer_context_menu .o_menu_item:focus-visible {
+  outline: 2px solid #7c7bad;
+  outline-offset: -2px;
+}
+
+.otoolkit_text_enhancer_context_menu .o_subpage_button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.otoolkit_text_enhancer_context_menu.freezed {
+  pointer-events: none;
+}
+
+.otoolkit_text_enhancer_context_menu.freezed::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.otoolkit_text_enhancer_context_menu.freezed::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid #7c7bad;
+  border-radius: 50%;
+  border-top-color: transparent;
+  z-index: 1;
+  animation: otoolkitEnhancerSpin 1s linear infinite;
+}
+
+@keyframes otoolkitEnhancerSpin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Hide Odoo red JS error banner */
+body::before {
+    display: none !important;
+    content: none !important;
+}

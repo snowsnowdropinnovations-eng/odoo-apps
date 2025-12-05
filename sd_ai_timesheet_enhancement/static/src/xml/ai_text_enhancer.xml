@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="sd_ai_timesheet_enhancement.AIEnhancerButton"
+       t-inherit="web_editor.HtmlField"
+       t-inherit-mode="extension">
+
+        <xpath expr="//div[@id='codeview-btn-group']" position="after">
+            <t t-if="props.name == 'html_description'">
+                <button
+                    type="button"
+                    class="btn btn-sm btn-secondary"
+                    t-on-click="_onAIClick"
+                >
+                    <i class="fa fa-magic"></i> AI
+                </button>
+            </t>
+        </xpath>
+    </t>
+</templates>
