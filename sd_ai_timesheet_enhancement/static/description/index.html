@@ -18,193 +18,87 @@
 
 </head>
 
-<body>
+<body style="font-family: 'Poppins', sans-serif; background-color: #f5f7fb; color: #111827;">
 <div id="loempia_tabs" class="container py-3">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f5f7fb;
-            color: #111827;
-        }
 
-        h1, h2, h3, h4, h5 {
-            font-family: 'Nunito', sans-serif;
-        }
-
-        .sd-primary {
-            color: #2563eb;
-        }
-
-        .sd-primary-bg {
-            background-color: #2563eb;
-        }
-
-        .sd-accent-bg {
-            background-color: #0ea5e9;
-        }
-
-        .sd-badge {
-            background-color: #0f766e;
-            color: #ecfeff;
-        }
-
-        .sd-section-title {
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 2.5rem;
-            position: relative;
-        }
-
-        .sd-section-title span {
-            display: inline-block;
-            padding-bottom: 0.4rem;
-            border-bottom: 3px solid #2563eb;
-        }
-
-        .sd-feature-card {
-            border-radius: 18px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
-            height: 100%;
-        }
-
-        .sd-feature-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 999px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #2563eb, #0ea5e9);
-            color: #fff;
-            margin-right: 12px;
-        }
-
-        .sd-hero {
-            background: radial-gradient(circle at top left, #dbeafe 0, #eff6ff 35%, #f9fafb 80%);
-        }
-
-        .sd-step-pointer {
-            background-image: url(pointer.png);
-            background-repeat: no-repeat;
-            background-size: contain;
-            width: 32px;
-            height: 32px;
-            flex-shrink: 0;
-        }
-
-        .sd-step-text {
-            color: #1f2937;
-            font-size: 18px;
-            max-width: 75%;
-            margin-bottom: 20px;
-        }
-
-        .sd-chip {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 10px;
-            border-radius: 999px;
-            background: #e0f2fe;
-            font-size: 12px;
-            color: #0f172a;
-            margin-right: 6px;
-        }
-
-        .sd-footer-logo {
-            max-height: 80px;
-        }
-
-        .sd-release-badge {
-            background-color: #2563eb;
-            color: #f9fafb;
-            padding: 5px 12px;
-            border-radius: 999px;
-            text-transform: uppercase;
-            font-size: 10px;
-            letter-spacing: 1px;
-        }
-
-        .sd-contact-card img {
-            width: 70px;
-            margin-bottom: 10px;
-        }
-
-        .sd-contact-card h5 {
-            font-size: 16px;
-            margin-bottom: 0;
-        }
-
-        .sd-service-card {
-            border-radius: 18px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
-            height: 100%;
-        }
-
-        a {
-            text-decoration: none;
-        }
-    </style>
     <!-- Header -->
     <div class="row justify-content-between align-items-center border-bottom pb-3 mx-0">
         <div class="col-auto text-center mb-3 mb-lg-0">
-            <a class="btn p-0">
-                <!-- Replace with your own logo path -->
+            <a class="btn p-0" style="text-decoration:none;">
                 <img src="snowdrop_logo_full.png" alt="SnowDrop Innovations" style="height:70px">
             </a>
         </div>
         <div class="col-auto d-flex flex-wrap justify-content-center gap-2 mb-3 mb-lg-0">
-            <span class="btn btn-sm sd-primary-bg text-white fw-semibold px-3 me-1">
+            <span class="btn btn-sm text-white fw-semibold px-3 me-1"
+                  style="background-color:#2563eb;">
                 <i class="fa fa-check me-1"></i> Community
             </span>
-            <span class="btn btn-sm sd-primary-bg text-white fw-semibold px-3 me-1">
+            <span class="btn btn-sm text-white fw-semibold px-3 me-1"
+                  style="background-color:#2563eb;">
                 <i class="fa fa-check me-1"></i> Enterprise
             </span>
-            <span class="btn btn-sm sd-primary-bg text-white fw-semibold px-3">
+            <span class="btn btn-sm text-white fw-semibold px-3"
+                  style="background-color:#2563eb;">
                 <i class="fa fa-check me-1"></i> Odoo.sh
             </span>
         </div>
         <div class="col-auto text-center">
             <a href="#" target="_blank"
-               class="btn btn-sm sd-accent-bg text-white fw-semibold px-3">
+               class="btn btn-sm text-white fw-semibold px-3"
+               style="background-color:#0ea5e9;text-decoration:none;">
                 <i class="fa fa-box-open me-1"></i> SnowDrop All Apps
             </a>
         </div>
     </div>
 
     <!-- Hero -->
-    <section class="oe_container sd-hero rounded-4 mt-4 mb-5 p-4 p-lg-5">
+    <section class="oe_container rounded-4 mt-4 mb-5 p-4 p-lg-5"
+             style="background: radial-gradient(circle at top left, #dbeafe 0, #eff6ff 35%, #f9fafb 80%);">
         <div class="text-center">
-            <h1 class="display-5 fw-bold sd-primary mb-3">
+            <h1 class="display-5 fw-bold mb-3"
+                style="font-family:'Nunito',sans-serif;color:#2563eb;">
                 AI Timesheet Enhancement
             </h1>
-            <p class="lead mb-3" style="max-width: 780px;margin:0 auto;">
+            <p class="lead mb-3 mx-auto" style="max-width:780px;">
                 Give your users an intelligent assistant directly inside every timesheet text field.
                 This module adds an AI-powered context menu that helps improve descriptions, fix grammar,
                 summarize long notes and generate clean, professional timesheet entries in a single click.
             </p>
             <div class="mt-3">
-                <span class="sd-chip"><i class="fa fa-magic me-1"></i> AI Text Suggestions</span>
-                <span class="sd-chip"><i class="fa fa-clock me-1"></i> Better Timesheet Quality</span>
-                <span class="sd-chip"><i class="fa fa-layer-group me-1"></i> Seamless Odoo Integration</span>
+                <span class="d-inline-flex align-items-center me-1 mb-1"
+                      style="padding:4px 10px;border-radius:999px;background:#e0f2fe;font-size:12px;color:#0f172a;">
+                    <i class="fa fa-magic me-1"></i> AI Text Suggestions
+                </span>
+                <span class="d-inline-flex align-items-center me-1 mb-1"
+                      style="padding:4px 10px;border-radius:999px;background:#e0f2fe;font-size:12px;color:#0f172a;">
+                    <i class="fa fa-clock me-1"></i> Better Timesheet Quality
+                </span>
+                <span class="d-inline-flex align-items-center mb-1"
+                      style="padding:4px 10px;border-radius:999px;background:#e0f2fe;font-size:12px;color:#0f172a;">
+                    <i class="fa fa-layer-group me-1"></i> Seamless Odoo Integration
+                </span>
             </div>
         </div>
     </section>
 
     <!-- Features -->
     <section class="mt-4">
-        <h2 class="sd-section-title">
-            <span>Key Features</span>
+        <h2 class="mb-4 text-center"
+            style="font-family:'Nunito',sans-serif;font-weight:700;">
+            <span style="display:inline-block;padding-bottom:0.4rem;border-bottom:3px solid #2563eb;">
+                Key Features
+            </span>
         </h2>
         <div class="row g-4">
             <div class="col-lg-4 col-md-6">
-                <div class="sd-feature-card p-4">
+                <div class="p-4 h-100 bg-white"
+                     style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 10px 25px rgba(15,23,42,0.05);">
                     <div class="d-flex align-items-center mb-2">
-                        <div class="sd-feature-icon">
+                        <div
+                            style="width:40px;height:40px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2563eb,#0ea5e9);color:#fff;margin-right:12px;">
                             <i class="fa fa-mouse-pointer"></i>
                         </div>
-                        <h4 class="mb-0 fs-5">AI Context Menu</h4>
+                        <h4 class="mb-0 fs-5" style="font-family:'Nunito',sans-serif;">AI Context Menu</h4>
                     </div>
                     <p class="mb-0">
                         Right-click (or use the configured trigger) in supported text fields to open a small AI menu
@@ -214,12 +108,14 @@
             </div>
 
             <div class="col-lg-4 col-md-6">
-                <div class="sd-feature-card p-4">
+                <div class="p-4 h-100 bg-white"
+                     style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 10px 25px rgba(15,23,42,0.05);">
                     <div class="d-flex align-items-center mb-2">
-                        <div class="sd-feature-icon">
+                        <div
+                            style="width:40px;height:40px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2563eb,#0ea5e9);color:#fff;margin-right:12px;">
                             <i class="fa fa-wand-magic-sparkles"></i>
                         </div>
-                        <h4 class="mb-0 fs-5">Polished Descriptions</h4>
+                        <h4 class="mb-0 fs-5" style="font-family:'Nunito',sans-serif;">Polished Descriptions</h4>
                     </div>
                     <p class="mb-0">
                         Turn short or rough notes into clear, well-structured timesheet lines that are easy for
@@ -229,12 +125,14 @@
             </div>
 
             <div class="col-lg-4 col-md-6">
-                <div class="sd-feature-card p-4">
+                <div class="p-4 h-100 bg-white"
+                     style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 10px 25px rgba(15,23,42,0.05);">
                     <div class="d-flex align-items-center mb-2">
-                        <div class="sd-feature-icon">
+                        <div
+                            style="width:40px;height:40px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2563eb,#0ea5e9);color:#fff;margin-right:12px;">
                             <i class="fa fa-language"></i>
                         </div>
-                        <h4 class="mb-0 fs-5">Multi-language Ready</h4>
+                        <h4 class="mb-0 fs-5" style="font-family:'Nunito',sans-serif;">Multi-language Ready</h4>
                     </div>
                     <p class="mb-0">
                         Use the AI helper to translate or adapt text to different languages, making
@@ -244,12 +142,14 @@
             </div>
 
             <div class="col-lg-4 col-md-6">
-                <div class="sd-feature-card p-4">
+                <div class="p-4 h-100 bg-white"
+                     style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 10px 25px rgba(15,23,42,0.05);">
                     <div class="d-flex align-items-center mb-2">
-                        <div class="sd-feature-icon">
+                        <div
+                            style="width:40px;height:40px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2563eb,#0ea5e9);color:#fff;margin-right:12px;">
                             <i class="fa fa-database"></i>
                         </div>
-                        <h4 class="mb-0 fs-5">Native Odoo Integration</h4>
+                        <h4 class="mb-0 fs-5" style="font-family:'Nunito',sans-serif;">Native Odoo Integration</h4>
                     </div>
                     <p class="mb-0">
                         Works smoothly with Odoo 17 <strong>Timesheets</strong> and related text inputs,
@@ -259,12 +159,14 @@
             </div>
 
             <div class="col-lg-4 col-md-6">
-                <div class="sd-feature-card p-4">
+                <div class="p-4 h-100 bg-white"
+                     style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 10px 25px rgba(15,23,42,0.05);">
                     <div class="d-flex align-items-center mb-2">
-                        <div class="sd-feature-icon">
+                        <div
+                            style="width:40px;height:40px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2563eb,#0ea5e9);color:#fff;margin-right:12px;">
                             <i class="fa fa-shield-halved"></i>
                         </div>
-                        <h4 class="mb-0 fs-5">Configurable & Secure</h4>
+                        <h4 class="mb-0 fs-5" style="font-family:'Nunito',sans-serif;">Configurable &amp; Secure</h4>
                     </div>
                     <p class="mb-0">
                         Uses server-side configuration and external dependencies (such as <code>requests</code>)
@@ -274,12 +176,14 @@
             </div>
 
             <div class="col-lg-4 col-md-6">
-                <div class="sd-feature-card p-4">
+                <div class="p-4 h-100 bg-white"
+                     style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 10px 25px rgba(15,23,42,0.05);">
                     <div class="d-flex align-items-center mb-2">
-                        <div class="sd-feature-icon">
+                        <div
+                            style="width:40px;height:40px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2563eb,#0ea5e9);color:#fff;margin-right:12px;">
                             <i class="fa fa-user-check"></i>
                         </div>
-                        <h4 class="mb-0 fs-5">User-friendly Experience</h4>
+                        <h4 class="mb-0 fs-5" style="font-family:'Nunito',sans-serif;">User-friendly Experience</h4>
                     </div>
                     <p class="mb-0">
                         No technical knowledge required. Users keep working in their usual screens while the
@@ -292,8 +196,11 @@
 
     <!-- Documentation / Screenshots -->
     <section class="mt-5">
-        <h2 class="sd-section-title">
-            <span>Configuration & Usage</span>
+        <h2 class="mb-4 text-center"
+            style="font-family:'Nunito',sans-serif;font-weight:700;">
+            <span style="display:inline-block;padding-bottom:0.4rem;border-bottom:3px solid #2563eb;">
+                Configuration &amp; Usage
+            </span>
         </h2>
 
         <div class="tab-content py-3">
@@ -303,24 +210,24 @@
                         <div class="row justify-content-center my-3 align-items-center">
                             <!-- Step 1 -->
                             <div class="col-md-4 my-3">
-                                <p class="sd-step-text">
+                                <p style="color:#1f2937;font-size:18px;">
                                     Open <strong>Apps</strong> and install the <strong>AI Timesheet Enhancement</strong> module.
                                     Make sure <strong>Timesheets</strong> is already installed in your database.
                                     After adding your timesheet description on the Timesheets tab, click on the description field’s AI action icon to open the AI assistant and enhance the text.
                                 </p>
                             </div>
                             <div class="col-md-8 my-3">
-                                <img class="img-fluid  " src="1.png" alt="Install module">
+                                <img class="img-fluid" src="1.png" alt="Install module">
                             </div>
                         </div>
-                        
+
                         <div class="row justify-content-center my-3 align-items-center">
                             <!-- Step 2 -->
                             <div class="col-md-8 my-3">
                                 <img class="img-fluid" src="2.png" alt="Install module">
                             </div>
                             <div class="col-md-4 my-3">
-                                <p class="sd-step-text">
+                                <p style="color:#1f2937;font-size:18px;">
                                     After clicking the <strong>AI action icon</strong>, the AI Enhancer wizard opens. From this wizard you can use the available AI options to generate or refine the description and choose the format in which you want the timesheet to be filled.
                                 </p>
                             </div>
@@ -328,7 +235,7 @@
                         <div class="row justify-content-center my-3 align-items-center">
                             <!-- Step 3 -->
                             <div class="col-md-4 my-3">
-                                <p class="sd-step-text">
+                                <p style="color:#1f2937;font-size:18px;">
                                     After you select any option in the AI wizard, such as <strong>Correct, Shorten, Lengthen, Friendly, Professional, or Persuasive</strong>, the system automatically generates a refined timesheet description based on your selection. The content is formatted accordingly and inserted instantly into the timesheet field, ensuring clear, accurate, and professionally structured entries.
                                 </p>
                             </div>
@@ -339,7 +246,7 @@
                         <div class="row justify-content-center my-3 align-items-center">
                             <!-- Step 4 -->
                             <div class="col-md-10 my-3 text-center">
-                                <p class="">
+                                <p>
                                     Once the AI generates the suggestions, you can select the most suitable one from the list. After making a selection, the Insert button becomes active. When you click Insert, the selected suggestion is automatically added to the <strong>description </strong>field in the wizard.
                                 </p>
                             </div>
@@ -354,7 +261,7 @@
                         <div class="row justify-content-center my-3 align-items-center">
                             <!-- Step 5 -->
                             <div class="col-md-4 my-3">
-                                <p class="sd-step-text">
+                                <p style="color:#1f2937;font-size:18px;">
                                     After that, as soon as you click the OK button in the wizard, the finalized content is automatically added to the <strong>timesheet description </strong>field.
                                 </p>
                             </div>
@@ -370,18 +277,24 @@
 
     <!-- Releases -->
     <section class="mt-4">
-        <h2 class="sd-section-title">
-            <span>Releases</span>
+        <h2 class="mb-4 text-center"
+            style="font-family:'Nunito',sans-serif;font-weight:700;">
+            <span style="display:inline-block;padding-bottom:0.4rem;border-bottom:3px solid #2563eb;">
+                Releases
+            </span>
         </h2>
 
         <div class="bg-white shadow-sm rounded-4 p-3 p-lg-4">
-            <h4 class="mb-1" style="font-size:16px;">
-                <span class="fa fa-code-branch me-2 sd-primary"></span>
+            <h4 class="mb-1" style="font-size:16px;font-family:'Nunito',sans-serif;">
+                <span class="fa fa-code-branch me-2" style="color:#2563eb;"></span>
                 <span>Version 17.0.1.0</span>
                 <span class="ms-2 text-muted">| Released on : 6<sup>th</sup> December 2025</span>
             </h4>
             <div class="mt-3 ps-4">
-                <span class="sd-release-badge">Initial</span>
+                <span
+                    style="background-color:#2563eb;color:#f9fafb;padding:5px 12px;border-radius:999px;font-size:10px;">
+                    Initial
+                </span>
                 <p class="mt-3 mb-0">
                     Initial release of AI Timesheet Enhancement with the AI context menu, configuration panel
                     and full integration with Odoo Timesheets.
@@ -392,8 +305,11 @@
 
     <!-- FAQs -->
     <section class="mt-5">
-        <h2 class="sd-section-title">
-            <span>FAQs</span>
+        <h2 class="mb-4 text-center"
+            style="font-family:'Nunito',sans-serif;font-weight:700;">
+            <span style="display:inline-block;padding-bottom:0.4rem;border-bottom:3px solid #2563eb;">
+                FAQs
+            </span>
         </h2>
 
         <div class="accordion" id="sd_faq_accordion">
@@ -402,7 +318,7 @@
                 <h2 class="accordion-header" id="faq1">
                     <button class="accordion-button fw-semibold" type="button" data-bs-toggle="collapse"
                             data-bs-target="#faq1_c" aria-expanded="true" aria-controls="faq1_c">
-                        <i class="fa fa-question-circle me-2 sd-primary"></i>
+                        <i class="fa fa-question-circle me-2" style="color:#2563eb;"></i>
                         Is this app compatible with Odoo Community?
                     </button>
                 </h2>
@@ -418,7 +334,7 @@
                 <h2 class="accordion-header" id="faq2">
                     <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse"
                             data-bs-target="#faq2_c" aria-expanded="false" aria-controls="faq2_c">
-                        <i class="fa fa-question-circle me-2 sd-primary"></i>
+                        <i class="fa fa-question-circle me-2" style="color:#2563eb;"></i>
                         Is this app compatible with Odoo Enterprise and Odoo.sh?
                     </button>
                 </h2>
@@ -435,7 +351,7 @@
                 <h2 class="accordion-header" id="faq3">
                     <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse"
                             data-bs-target="#faq3_c" aria-expanded="false" aria-controls="faq3_c">
-                        <i class="fa fa-question-circle me-2 sd-primary"></i>
+                        <i class="fa fa-question-circle me-2" style="color:#2563eb;"></i>
                         Is the module easy to install and use?
                     </button>
                 </h2>
@@ -452,7 +368,7 @@
                 <h2 class="accordion-header" id="faq4">
                     <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse"
                             data-bs-target="#faq4_c" aria-expanded="false" aria-controls="faq4_c">
-                        <i class="fa fa-question-circle me-2 sd-primary"></i>
+                        <i class="fa fa-question-circle me-2" style="color:#2563eb;"></i>
                         Can I request customization for this app?
                     </button>
                 </h2>
@@ -469,7 +385,7 @@
                 <h2 class="accordion-header" id="faq5">
                     <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse"
                             data-bs-target="#faq5_c" aria-expanded="false" aria-controls="faq5_c">
-                        <i class="fa fa-question-circle me-2 sd-primary"></i>
+                        <i class="fa fa-question-circle me-2" style="color:#2563eb;"></i>
                         Do I get free support?
                     </button>
                 </h2>
@@ -487,27 +403,36 @@
 
     <!-- Contact -->
     <section class="mt-5">
-        <h3 class="sd-section-title">
-            <span>Get in Touch with Us</span>
+        <h3 class="mb-4 text-center"
+            style="font-family:'Nunito',sans-serif;font-weight:700;">
+            <span style="display:inline-block;padding-bottom:0.4rem;border-bottom:3px solid #2563eb;">
+                Get in Touch with Us
+            </span>
         </h3>
 
         <div class="row g-3 bg-white rounded-4 shadow-sm text-center pt-4 pb-3 px-4 justify-content-center">
-            <div class="col-6 col-lg-3 pb-3 sd-contact-card">
-                <a href="mailto:snowsnowdropinnovations@gmail.com" target="_blank" style="color:#111827;">
-                    <img src="mail.svg" alt="Email">
-                    <h5>Email</h5>
+            <div class="col-6 col-lg-3 pb-3">
+                <a href="mailto:snowsnowdropinnovations@gmail.com" target="_blank"
+                   style="color:#111827;text-decoration:none;display:inline-block;">
+                    <img src="mail.svg" alt="Email"
+                         style="width:70px;margin-bottom:10px;">
+                    <h5 style="font-size:16px;margin-bottom:0;font-family:'Nunito',sans-serif;">Email</h5>
                 </a>
             </div>
-            <div class="col-6 col-lg-3 pb-3 sd-contact-card">
-                <a href="" target="_blank" style="color:#111827;">
-                    <img src="whatsapp.png" alt="WhatsApp">
-                    <h5>WhatsApp : +91 73591 69075</h5>
+            <div class="col-6 col-lg-3 pb-3">
+                <a href="" target="_blank"
+                   style="color:#111827;text-decoration:none;display:inline-block;">
+                    <img src="whatsapp.png" alt="WhatsApp"
+                         style="width:70px;margin-bottom:10px;">
+                    <h5 style="font-size:16px;margin-bottom:0;font-family:'Nunito',sans-serif;">WhatsApp : +91 73591 69075</h5>
                 </a>
             </div>
-            <div class="col-6 col-lg-3 pb-3 sd-contact-card">
-                <a href="" target="_blank" style="color:#111827;">
-                    <img src="call.svg" alt="Call">
-                    <h5>Call : +91 73591 69075</h5>
+            <div class="col-6 col-lg-3 pb-3">
+                <a href="" target="_blank"
+                   style="color:#111827;text-decoration:none;display:inline-block;">
+                    <img src="call.svg" alt="Call"
+                         style="width:70px;margin-bottom:10px;">
+                    <h5 style="font-size:16px;margin-bottom:0;font-family:'Nunito',sans-serif;">Call : +91 73591 69075</h5>
                 </a>
             </div>
         </div>
@@ -515,44 +440,53 @@
 
     <!-- Services -->
     <section class="mt-5">
-        <h3 class="sd-section-title">
-            <span>Our Odoo Services</span>
+        <h3 class="mb-4 text-center"
+            style="font-family:'Nunito',sans-serif;font-weight:700;">
+            <span style="display:inline-block;padding-bottom:0.4rem;border-bottom:3px solid #2563eb;">
+                Our Odoo Services
+            </span>
         </h3>
         <div class="row g-4 text-center">
             <div class="col-lg-4 col-md-6">
-                <div class="sd-service-card p-4">
+                <div class="p-4 h-100 bg-white"
+                     style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 8px 20px rgba(15,23,42,0.04);">
                     <img src="implementation.png" alt="" class="mb-3" style="width:80px;">
-                    <h5 class="mb-0">Odoo Implementation</h5>
+                    <h5 class="mb-0" style="font-family:'Nunito',sans-serif;">Odoo Implementation</h5>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
-                <div class="sd-service-card p-4">
+                <div class="p-4 h-100 bg-white"
+                     style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 8px 20px rgba(15,23,42,0.04);">
                     <img src="customization.png" alt="" class="mb-3" style="width:80px;">
-                    <h5 class="mb-0">Odoo Customization</h5>
+                    <h5 class="mb-0" style="font-family:'Nunito',sans-serif;">Odoo Customization</h5>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
-                <div class="sd-service-card p-4">
+                <div class="p-4 h-100 bg-white"
+                     style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 8px 20px rgba(15,23,42,0.04);">
                     <img src="data.png" alt="" class="mb-3" style="width:80px;">
-                    <h5 class="mb-0">Database Migration</h5>
+                    <h5 class="mb-0" style="font-family:'Nunito',sans-serif;">Database Migration</h5>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
-                <div class="sd-service-card p-4">
+                <div class="p-4 h-100 bg-white"
+                     style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 8px 20px rgba(15,23,42,0.04);">
                     <img src="training.png" alt="" class="mb-3" style="width:80px;">
-                    <h5 class="mb-0">Odoo Training</h5>
+                    <h5 class="mb-0" style="font-family:'Nunito',sans-serif;">Odoo Training</h5>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
-                <div class="sd-service-card p-4">
+                <div class="p-4 h-100 bg-white"
+                     style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 8px 20px rgba(15,23,42,0.04);">
                     <img src="support.png" alt="" class="mb-3" style="width:80px;">
-                    <h5 class="mb-0">Support &amp; Maintenance</h5>
+                    <h5 class="mb-0" style="font-family:'Nunito',sans-serif;">Support &amp; Maintenance</h5>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
-                <div class="sd-service-card p-4">
+                <div class="p-4 h-100 bg-white"
+                     style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 8px 20px rgba(15,23,42,0.04);">
                     <img src="mobile.png" alt="" class="mb-3" style="width:80px;">
-                    <h5 class="mb-0">Custom Development</h5>
+                    <h5 class="mb-0" style="font-family:'Nunito',sans-serif;">Custom Development</h5>
                 </div>
             </div>
         </div>
@@ -561,8 +495,8 @@
     <!-- Footer logo -->
     <div class="row mt-5 mb-4">
         <div class="col-12 text-center">
-            <!-- Replace with your brand image -->
-            <img src="snowdrop_logo_full.png" alt="SnowDrop Innovations" class="sd-footer-logo">
+            <img src="snowdrop_logo_full.png" alt="SnowDrop Innovations"
+                 style="max-height:80px;">
         </div>
     </div>
 
