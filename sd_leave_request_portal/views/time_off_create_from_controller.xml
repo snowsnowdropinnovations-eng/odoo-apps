@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="time_off_create_form_template" name="Create Time Off Request Form">
+        <t t-call="website.layout">
+            <div class="container my-5">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-md-8">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="mb-0">Create New Time Off Request</h4>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="error">
+                                    <div class="alert alert-danger" role="alert">
+                                        <t t-esc="error"/>
+                                    </div>
+                                </t>
+                                <form action="/create/time/off" method="POST" enctype="multipart/form-data">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                    <!-- Leave Type Selection -->
+                                    <div class="mb-3">
+                                        <label for="time_off_type" class="form-label">Leave Type *</label>
+                                        <select name="time_off_type" id="time_off_type" class="form-select"
+                                                onchange="toggleAttachmentField(); toggleHalfDayAuto();">
+                                            <option value="">Select Leave Type</option>
+                                            <t t-foreach="all_types" t-as="type">
+                                                <option t-att-value="type['id']" t-att-data-leave-type="type['type']"><t
+                                                        t-esc="type['name']"/></option>
+                                            </t>
+                                        </select>
+                                    </div>
+
+                                    <!-- Attachment Field (Hidden by default) -->
+                                    <div class="mb-3" id="attachment_field" style="display: none;">
+                                        <label for="attachment_file" class="form-label">Document Upload</label>
+                                        <input type="file" name="attachment_file" id="attachment_file"
+                                               class="form-control"/>
+                                    </div>
+
+                                    <!-- Half Day and Custom Hours Checkboxes -->
+                                    <div class="mb-3">
+                                        <div class="d-flex gap-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="request_unit_half"
+                                                       name="request_unit_half" onchange="toggleHalfDay()"/>
+                                                <label class="form-check-label" for="request_unit_half">Half Day</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="request_unit_hours"
+                                                       name="request_unit_hours" onchange="toggleCustomHours()"/>
+                                                <label class="form-check-label" for="request_unit_hours">Custom
+                                                    Hours</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Date Fields -->
+                                    <div class="mb-3 row">
+                                        <div class="col" id="from_date_col">
+                                            <label for="from_date" class="form-label">From Date *</label>
+                                            <input type="datetime-local" name="from_date" id="from_date"
+                                                   class="form-control"/>
+                                        </div>
+                                        <div class="col" id="to_date_col">
+                                            <label for="to_date" class="form-label">To Date *</label>
+                                            <input type="datetime-local" name="to_date" id="to_date"
+                                                   class="form-control"/>
+                                        </div>
+                                        <!-- Morning/Afternoon Selection (Hidden by default) -->
+                                        <div class="col" id="period_col" style="display: none;">
+                                            <label for="half_morning_or_evening" class="form-label">Morning/Afternoon
+                                                *</label>
+                                            <select class="form-control" id="half_morning_or_evening"
+                                                    name="half_morning_or_evening">
+                                                <option value="">Select Period</option>
+                                                <option value="am">Morning</option>
+                                                <option value="pm">Afternoon</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Custom Hours Fields (Hidden by default) -->
+                                    <div id="custom_hours_fields" style="display: none;">
+                                        <div class="row mb-3">
+                                            <div class="col">
+                                                <label for="from_time" class="form-label">From Time *</label>
+                                                <input type="time" class="form-control" id="from_time" name="from_time"
+                                                       onchange="calculateDuration()"/>
+                                            </div>
+                                            <div class="col">
+                                                <label for="to_time" class="form-label">To Time *</label>
+                                                <input type="time" class="form-control" id="to_time" name="to_time"
+                                                       onchange="calculateDuration()"/>
+                                            </div>
+                                            <div class="col">
+                                                <label for="overall_hours" class="form-label">Duration</label>
+                                                <input type="text" class="form-control" id="overall_hours"
+                                                       name="overall_hours" placeholder="Auto calculated"/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Description -->
+                                    <div class="mb-3">
+                                        <label for="description" class="form-label">Description *</label>
+                                        <textarea name="description" id="description" class="form-control" rows="4"
+                                                  placeholder="Enter description"></textarea>
+                                    </div>
+
+                                    <!-- Submit Buttons -->
+                                    <div class="d-flex justify-content-end">
+                                        <a href="/all/time/off" class="btn btn-secondary me-2">Cancel</a>
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                function toggleAttachmentField() {
+                const leaveTypeSelect = document.getElementById('time_off_type');
+                const selectedOption = leaveTypeSelect.options[leaveTypeSelect.selectedIndex];
+                const leaveType = selectedOption ? selectedOption.getAttribute('data-leave-type') : null;
+                const attachmentField = document.getElementById('attachment_field');
+                const halfDayCheckbox = document.getElementById('request_unit_half');
+
+                // Show attachment field for sick leave
+                if (leaveType === 'sick') {
+                attachmentField.style.display = 'block';
+                } else {
+                attachmentField.style.display = 'none';
+                }
+                }
+
+                function toggleHalfDayAuto() {
+                const leaveTypeSelect = document.getElementById('time_off_type');
+                const selectedOption = leaveTypeSelect.options[leaveTypeSelect.selectedIndex];
+                const leaveType = selectedOption ? selectedOption.getAttribute('data-leave-type') : null;
+                const halfDayCheckbox = document.getElementById('request_unit_half');
+
+                if (leaveType === 'half_day') {
+                halfDayCheckbox.checked = true;
+                halfDayCheckbox.disabled = true;
+                toggleHalfDay();
+                } else {
+                if (!document.getElementById('request_unit_hours').checked) {
+                halfDayCheckbox.disabled = false;
+                }
+                }
+                }
+
+                function toggleHalfDay() {
+                const halfDayCheckbox = document.getElementById('request_unit_half');
+                const customHoursCheckbox = document.getElementById('request_unit_hours');
+                const fromDateCol = document.getElementById('from_date_col');
+                const toDateCol = document.getElementById('to_date_col');
+                const periodCol = document.getElementById('period_col');
+                const toDateInput = document.getElementById('to_date');
+                const periodSelect = document.getElementById('half_morning_or_evening');
+
+                if (halfDayCheckbox.checked) {
+                customHoursCheckbox.checked = false;
+                customHoursCheckbox.disabled = true;
+                toggleCustomHours();
+
+                toDateCol.style.display = 'none';
+                periodCol.style.display = 'block';
+                toDateInput.removeAttribute('required');
+                periodSelect.setAttribute('required', 'required');
+                toDateInput.value = '';
+                } else {
+                customHoursCheckbox.disabled = false;
+                toDateCol.style.display = 'block';
+                periodCol.style.display = 'none';
+                toDateInput.setAttribute('required', 'required');
+                periodSelect.removeAttribute('required');
+                periodSelect.value = '';
+                }
+                }
+
+                function toggleCustomHours() {
+                const customHoursCheckbox = document.getElementById('request_unit_hours');
+                const halfDayCheckbox = document.getElementById('request_unit_half');
+                const fromDateCol = document.getElementById('from_date_col');
+                const toDateCol = document.getElementById('to_date_col');
+                const customHoursFields = document.getElementById('custom_hours_fields');
+                const fromDateInput = document.getElementById('from_date');
+                const toDateInput = document.getElementById('to_date');
+                const fromTime = document.getElementById('from_time');
+                const toTime = document.getElementById('to_time');
+
+                if (customHoursCheckbox.checked) {
+                halfDayCheckbox.checked = false;
+                halfDayCheckbox.disabled = true;
+                toggleHalfDay();
+
+                // Keep from_date visible and required, hide to_date
+                fromDateCol.style.display = 'block';
+                toDateCol.style.display = 'none';
+                customHoursFields.style.display = 'block';
+                fromDateInput.setAttribute('required', 'required');
+                toDateInput.removeAttribute('required');
+                fromTime.setAttribute('required', 'required');
+                toTime.setAttribute('required', 'required');
+                toDateInput.value = ''; // Clear to_date
+                } else {
+                halfDayCheckbox.disabled = false;
+                fromDateCol.style.display = 'block';
+                toDateCol.style.display = 'block';
+                customHoursFields.style.display = 'none';
+                fromDateInput.setAttribute('required', 'required');
+                toDateInput.setAttribute('required', 'required');
+                fromTime.removeAttribute('required');
+                toTime.removeAttribute('required');
+                fromTime.value = '';
+                toTime.value = '';
+                document.getElementById('overall_hours').value = '';
+                }
+                }
+
+                function calculateDuration() {
+                const fromTime = document.getElementById('from_time').value;
+                const toTime = document.getElementById('to_time').value;
+                const durationField = document.getElementById('overall_hours');
+
+                if (fromTime &amp;&amp; toTime) {
+                const from = new Date(`2000-01-01T${fromTime}:00`);
+                const to = new Date(`2000-01-01T${toTime}:00`);
+                if (to > from) {
+                const diffMs = to - from;
+                const diffHours = diffMs / (1000 * 60 * 60);
+                durationField.value = `${diffHours.toFixed(1)} hours`;
+                } else {
+                durationField.value = 'Invalid time range';
+                }
+                } else {
+                durationField.value = '';
+                }
+                }
+
+                // Initialize form state on page load
+                document.addEventListener('DOMContentLoaded', function() {
+                toggleAttachmentField();
+                toggleHalfDayAuto(); // Add this to initialize half-day auto-check
+                toggleHalfDay();
+                toggleCustomHours();
+                });
+            </script>
+
+
+        </t>
+    </template>
+</odoo>
