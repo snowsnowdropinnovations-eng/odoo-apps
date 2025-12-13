@@ -6,171 +6,57 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>AI Timesheet Enhancement</title>
-    <!-- Bootstrap 5 -->
+
+    <!-- Bootstrap 5 (for general web usage; will be stripped in App Store version) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Font Awesome 4 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f5f7fb;
-            color: #111827;
-        }
 
-        h1, h2, h3, h4, h5 {
-            font-family: 'Nunito', sans-serif;
-        }
-
-        .sd-primary {
-            color: #2563eb;
-        }
-
-        .sd-primary-bg {
-            background-color: #2563eb;
-        }
-
-        .sd-accent-bg {
-            background-color: #0ea5e9;
-        }
-
-        .sd-badge {
-            background-color: #0f766e;
-            color: #ecfeff;
-        }
-
-        .sd-section-title {
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 2.5rem;
-            position: relative;
-        }
-
-        .sd-section-title span {
-            display: inline-block;
-            padding-bottom: 0.4rem;
-            border-bottom: 3px solid #2563eb;
-        }
-
-        .sd-feature-card {
-            border-radius: 18px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
-            height: 100%;
-        }
-
-        .sd-feature-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 999px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #2563eb, #0ea5e9);
-            color: #fff;
-            margin-right: 12px;
-        }
-
-        .sd-hero {
-            background: radial-gradient(circle at top left, #dbeafe 0, #eff6ff 35%, #f9fafb 80%);
-        }
-
-        .sd-step-pointer {
-            background-image: url(pointer.png);
-            background-repeat: no-repeat;
-            background-size: contain;
-            width: 32px;
-            height: 32px;
-            flex-shrink: 0;
-        }
-
-        .sd-step-text {
-            color: #1f2937;
-            font-size: 18px;
-            max-width: 75%;
-            margin-bottom: 20px;
-        }
-
-        .sd-chip {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 10px;
-            border-radius: 999px;
-            background: #e0f2fe;
-            font-size: 12px;
-            color: #0f172a;
-            margin-right: 6px;
-        }
-
-        .sd-footer-logo {
-            max-height: 80px;
-        }
-
-        .sd-release-badge {
-            background-color: #2563eb;
-            color: #f9fafb;
-            padding: 5px 12px;
-            border-radius: 999px;
-            text-transform: uppercase;
-            font-size: 10px;
-            letter-spacing: 1px;
-        }
-
-        .sd-contact-card img {
-            width: 70px;
-            margin-bottom: 10px;
-        }
-
-        .sd-contact-card h5 {
-            font-size: 16px;
-            margin-bottom: 0;
-        }
-
-        .sd-service-card {
-            border-radius: 18px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
-            height: 100%;
-        }
-
-        a {
-            text-decoration: none;
-        }
-    </style>
 </head>
 
-<body>
-    <div id="loempia_tabs" class="container py-3">
-        <!-- Header -->
-        <div class="row justify-content-between align-items-center border-bottom pb-3 mx-0">
-            <div class="col-auto text-center mb-3 mb-lg-0">
-                <a class="btn p-0">
-                    <!-- Replace with your own logo path -->
-                    <img src="snowdrop_logo_full.png" alt="SnowDrop Innovations" style="height:70px">
-                </a>
-            </div>
-            <div class="col-auto d-flex flex-wrap justify-content-center gap-2 mb-3 mb-lg-0">
-                <span class="btn btn-sm sd-primary-bg text-white fw-semibold px-3 me-1">
-                    <i class="fa fa-check me-1"></i> Community
-                </span>
-                <span class="btn btn-sm sd-primary-bg text-white fw-semibold px-3 me-1">
-                    <i class="fa fa-check me-1"></i> Enterprise
-                </span>
-                <span class="btn btn-sm sd-primary-bg text-white fw-semibold px-3">
-                    <i class="fa fa-check me-1"></i> Odoo.sh
-                </span>
-            </div>
-            <div class="col-auto text-center">
-                <a href="#" target="_blank" class="btn btn-sm sd-accent-bg text-white fw-semibold px-3">
-                    <i class="fa fa-box-open me-1"></i> SnowDrop All Apps
-                </a>
-            </div>
+<body style="font-family: 'Poppins', sans-serif; background-color: #f5f7fb; color: #111827;">
+<div id="loempia_tabs" class="container py-3">
+
+    <!-- Header -->
+    <div class="row justify-content-between align-items-center border-bottom pb-3 mx-0">
+        <div class="col-auto text-center mb-3 mb-lg-0">
+            <a class="btn p-0" style="text-decoration:none;">
+                <img src="snowdrop_logo_full.png" alt="SnowDrop Innovations" style="height:70px">
+            </a>
         </div>
-        <!-- Hero -->
-        <section class="oe_container sd-hero rounded-4 mt-4 mb-5 p-4 p-lg-5">
-            <div class="text-center">
-                <h1 class="display-5 fw-bold sd-primary mb-3">
+        <div class="col-auto d-flex flex-wrap justify-content-center gap-2 mb-3 mb-lg-0">
+            <span class="btn btn-sm text-white fw-semibold px-3 me-1"
+                  style="background-color:#2563eb;">
+                <i class="fa fa-check" style="margin-right:4px;"></i> Community
+            </span>
+            <span class="btn btn-sm text-white fw-semibold px-3 me-1"
+                  style="background-color:#2563eb;">
+                <i class="fa fa-check" style="margin-right:4px;"></i> Enterprise
+            </span>
+            <span class="btn btn-sm text-white fw-semibold px-3"
+                  style="background-color:#2563eb;">
+                <i class="fa fa-check" style="margin-right:4px;"></i> Odoo.sh
+            </span>
+        </div>
+        <div class="col-auto text-center">
+            <a href="#" target="_blank"
+               class="btn btn-sm text-white fw-semibold px-3"
+               style="background-color:#0ea5e9;text-decoration:none;">
+                <i class="fa fa-cubes" style="margin-right:4px;"></i> SnowDrop All Apps
+            </a>
+        </div>
+    </div>
+
+    <!-- Hero -->
+    <section class="oe_container rounded-4 mt-4 mb-5 p-4 p-lg-5"
+             style="background-color:#eff6ff;">
+        <div class="text-center">
+            <h1 class="display-5 fw-bold mb-3"
+                style="font-family:'Nunito',sans-serif;color:#2563eb;">
                     Portal Leave Request
                 </h1>
                 <p class="lead mb-3" style="max-width: 780px;margin:0 auto;">
@@ -184,111 +70,160 @@
             </div>
         </section>
         <!-- Features -->
-        <section class="mt-4">
-            <h2 class="sd-section-title">
-                <span>Key Features</span>
-            </h2>
-            <div class="row g-4">
-                <!-- Feature 1 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="sd-feature-card p-4">
-                        <div class="d-flex align-items-center mb-2">
-                            <div class="sd-feature-icon">
-                                <i class="fa fa-plane-departure"></i>
-                            </div>
-                            <h4 class="mb-0 fs-5">Easy Leave Requests</h4>
-                        </div>
-                        <p class="mb-0">
-                            Employees can submit leave requests directly from the portal using a simple, clean, and user-friendly interface.
-                        </p>
+<section class="mt-4">
+    <h2 class="mb-4 text-center"
+        style="font-family:'Nunito',sans-serif;font-weight:700;">
+        <span style="display:inline-block;padding-bottom:0.4rem;border-bottom:3px solid #2563eb;">
+            Key Features
+        </span>
+    </h2>
+
+    <div class="row g-4">
+
+        <!-- Feature 1 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="p-4 h-100 bg-white"
+                 style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 10px 25px rgba(15,23,42,0.05);">
+                <div class="d-flex align-items-center mb-2">
+                    <div style="width:40px;height:40px;border-radius:999px;display:inline-flex;
+                                align-items:center;justify-content:center;
+                                background-color:#2563eb;color:#fff;margin-right:12px;">
+                        <i class="fa fa-plane"></i>
                     </div>
+                    <h4 class="mb-0 fs-5" style="font-family:'Nunito',sans-serif;">
+                        Apply Leave from Portal
+                    </h4>
                 </div>
-                <!-- Feature 2 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="sd-feature-card p-4">
-                        <div class="d-flex align-items-center mb-2">
-                            <div class="sd-feature-icon">
-                                <i class="fa fa-calendar-check"></i>
-                            </div>
-                            <h4 class="mb-0 fs-5">Track Request Status</h4>
-                        </div>
-                        <p class="mb-0">
-                            Users can view approval status such as Pending, Approved, or Refused without accessing the backend.
-                        </p>
-                    </div>
-                </div>
-                <!-- Feature 3 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="sd-feature-card p-4">
-                        <div class="d-flex align-items-center mb-2">
-                            <div class="sd-feature-icon">
-                                <i class="fa fa-hourglass-half"></i>
-                            </div>
-                            <h4 class="mb-0 fs-5">View Leave Balance</h4>
-                        </div>
-                        <p class="mb-0">
-                            Employees can instantly check their leave balance for each leave type before submitting a new request.
-                        </p>
-                    </div>
-                </div>
-                <!-- Feature 4 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="sd-feature-card p-4">
-                        <div class="d-flex align-items-center mb-2">
-                            <div class="sd-feature-icon">
-                                <i class="fa fa-users-gear"></i>
-                            </div>
-                            <h4 class="mb-0 fs-5">Integrated with HR</h4>
-                        </div>
-                        <p class="mb-0">
-                            Fully integrates with Odoo HR, Attendance, and Holidays, ensuring smooth HR workflow and accurate leave tracking.
-                        </p>
-                    </div>
-                </div>
-                <!-- Feature 5 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="sd-feature-card p-4">
-                        <div class="d-flex align-items-center mb-2">
-                            <div class="sd-feature-icon">
-                                <i class="fa fa-shield-halved"></i>
-                            </div>
-                            <h4 class="mb-0 fs-5">Secure Portal Access</h4>
-                        </div>
-                        <p class="mb-0">
-                            Employees only access their own leave information, ensuring privacy and data security in the portal.
-                        </p>
-                    </div>
-                </div>
-                <!-- Feature 6 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="sd-feature-card p-4">
-                        <div class="d-flex align-items-center mb-2">
-                            <div class="sd-feature-icon">
-                                <i class="fa fa-mobile-screen"></i>
-                            </div>
-                            <h4 class="mb-0 fs-5">Mobile-Friendly Design</h4>
-                        </div>
-                        <p class="mb-0">
-                            Optimized for mobile and tablet screens so employees can apply for leave anytime, anywhere.
-                        </p>
-                    </div>
-                </div>
+                <p class="mb-0">
+                    Employees can submit leave requests directly from the portal using a simple,
+                    clean, and user-friendly interface.
+                </p>
             </div>
-        </section>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="p-4 h-100 bg-white"
+                 style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 10px 25px rgba(15,23,42,0.05);">
+                <div class="d-flex align-items-center mb-2">
+                    <div style="width:40px;height:40px;border-radius:999px;display:inline-flex;
+                                align-items:center;justify-content:center;
+                                background-color:#2563eb;color:#fff;margin-right:12px;">
+                        <i class="fa fa-calendar-check-o"></i>
+                    </div>
+                    <h4 class="mb-0 fs-5" style="font-family:'Nunito',sans-serif;">
+                        Track Request Status
+                    </h4>
+                </div>
+                <p class="mb-0">
+                    Employees can view approval status such as Pending, Approved, or Refused
+                    without accessing the backend.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="p-4 h-100 bg-white"
+                 style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 10px 25px rgba(15,23,42,0.05);">
+                <div class="d-flex align-items-center mb-2">
+                    <div style="width:40px;height:40px;border-radius:999px;display:inline-flex;
+                                align-items:center;justify-content:center;
+                                background-color:#2563eb;color:#fff;margin-right:12px;">
+                        <i class="fa fa-hourglass-half"></i>
+                    </div>
+                    <h4 class="mb-0 fs-5" style="font-family:'Nunito',sans-serif;">
+                        View Leave Balance
+                    </h4>
+                </div>
+                <p class="mb-0">
+                    Employees can instantly check allocated, used, and remaining leave balance
+                    before submitting a request.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="p-4 h-100 bg-white"
+                 style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 10px 25px rgba(15,23,42,0.05);">
+                <div class="d-flex align-items-center mb-2">
+                    <div style="width:40px;height:40px;border-radius:999px;display:inline-flex;
+                                align-items:center;justify-content:center;
+                                background-color:#2563eb;color:#fff;margin-right:12px;">
+                        <i class="fa fa-users"></i>
+                    </div>
+                    <h4 class="mb-0 fs-5" style="font-family:'Nunito',sans-serif;">
+                        Integrated with HR
+                    </h4>
+                </div>
+                <p class="mb-0">
+                    Fully integrated with Odoo HR, Attendance, and Time Off modules
+                    for accurate leave tracking.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="p-4 h-100 bg-white"
+                 style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 10px 25px rgba(15,23,42,0.05);">
+                <div class="d-flex align-items-center mb-2">
+                    <div style="width:40px;height:40px;border-radius:999px;display:inline-flex;
+                                align-items:center;justify-content:center;
+                                background-color:#2563eb;color:#fff;margin-right:12px;">
+                        <i class="fa fa-shield"></i>
+                    </div>
+                    <h4 class="mb-0 fs-5" style="font-family:'Nunito',sans-serif;">
+                        Secure Portal Access
+                    </h4>
+                </div>
+                <p class="mb-0">
+                    Employees can only access their own leave data,
+                    ensuring privacy and data security.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="p-4 h-100 bg-white"
+                 style="border-radius:18px;border:1px solid #e5e7eb;box-shadow:0 10px 25px rgba(15,23,42,0.05);">
+                <div class="d-flex align-items-center mb-2">
+                    <div style="width:40px;height:40px;border-radius:999px;display:inline-flex;
+                                align-items:center;justify-content:center;
+                                background-color:#2563eb;color:#fff;margin-right:12px;">
+                        <i class="fa fa-mobile"></i>
+                    </div>
+                    <h4 class="mb-0 fs-5" style="font-family:'Nunito',sans-serif;">
+                        Mobile-Friendly Design
+                    </h4>
+                </div>
+                <p class="mb-0">
+                    Responsive design allows employees to apply for leave
+                    anytime from mobile or tablet devices.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
         <!-- Documentation / Screenshots -->
         <section class="mt-5">
-            <h2 class="sd-section-title">
-                <span>Configuration & Usage</span>
-            </h2>
+        <h2 class="mb-4 text-center"
+            style="font-family:'Nunito',sans-serif;font-weight:700;">
+            <span style="display:inline-block;padding-bottom:0.4rem;border-bottom:3px solid #2563eb;">
+                Configuration &amp; Usage
+            </span>
+        </h2>
             <div class="tab-content py-3">
-                <div id="Configurations" class="tab-pane active show">
-                    <section id="sd_configuration">
-                        <div class="container-fluid">
-                            <div class="text-center">
-                                <!-- Step 1 -->
-                                <div class="d-flex justify-content-center align-items-start mb-3">
-                                    <div class="sd-step-pointer"></div>
-                                    <p class="sd-step-text">
+            <div id="Configurations" class="tab-pane active show">
+                <section id="sd_configuration">
+                    <div class="container">
+                        <div class="row justify-content-center my-3 align-items-center">
+                            <div class="col-md-4 my-3">
+                                <p style="color:#1f2937;font-size:18px;">
                                         <strong>Open Time Off Types</strong><br />
                                         Navigate to:<br>
                                         <strong>Time Off → Configuration → Time Off Types</strong><br>
@@ -297,58 +232,58 @@
                                         The screenshot shows the Configuration dropdown where you must click Time Off Types to proceed with setting up the leave options used in the portal form.
                                     </p>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-8 my-3">
                                     <!-- replace with your real screenshot -->
                                     <img class="img-fluid rounded shadow-sm" src="1.png" alt="Install module">
                                 </div>
                                 <br /><br />
-                                <!-- Step 2 -->
-                                <div class="d-flex justify-content-center align-items-start mb-3">
-                                    <div class="sd-step-pointer"></div>
-                                    <p class="sd-step-text">
+                               
+                                <div class="row justify-content-center my-3 align-items-center">
+                            <div class="col-md-4 my-3">
+                                <p style="color:#1f2937;font-size:18px;">
                                         <strong>Create a Portal User</strong><br>
                                         Go to <strong>Settings → Users</strong> and create a new user.
                                         Set the <strong>User Type</strong> to <strong>Portal</strong> so the employee can access the leave request page from the portal.
                                     </p>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-8 my-3">
                                     <!-- replace with your real screenshot -->
                                     <img class="img-fluid rounded shadow-sm" src="2.png" alt="Install module">
                                 </div>
                                 <br /><br />
-                                <!-- Step 3 -->
-                                <div class="d-flex justify-content-center align-items-start mb-3">
-                                    <div class="sd-step-pointer"></div>
-                                    <p class="sd-step-text">
+                                
+                                <div class="row justify-content-center my-3 align-items-center">
+                            <div class="col-md-4 my-3">
+                                <p style="color:#1f2937;font-size:18px;">
                                         <strong>Link Employee with Portal User</strong><br>
                                         Open the employee profile and click on the <strong>Settings</strong> tab.
                                         Under <strong>Related User</strong>, select the portal user created earlier.
                                         This links the employee record with the portal account, allowing the user to request leave from the portal.
                                     </p>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-8 my-3">
                                     <!-- replace with your real screenshot -->
                                     <img class="img-fluid rounded shadow-sm" src="3.png" alt="Install module">
                                 </div>
                                 <br /><br />
-                                <!-- Step 4 -->
-                                <div class="d-flex justify-content-center align-items-start mb-3">
-                                    <div class="sd-step-pointer"></div>
-                                    <p class="sd-step-text">
+                             
+                                <div class="row justify-content-center my-3 align-items-center">
+                            <div class="col-md-4 my-3">
+                                <p style="color:#1f2937;font-size:18px;">
                                         <strong>Access the Time Off Summary</strong><br>
                                         After logging into the portal, open your <strong>My Account</strong> page.
                                         Here you can see your profile details and a <strong>Time Off Summary</strong> box showing the total number of your leave requests.
                                     </p>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-8 my-3">
                                     <!-- replace with your real screenshot -->
                                     <img class="img-fluid rounded shadow-sm" src="4.png" alt="Install module">
                                 </div>
                                 <br /><br />
-                                <!-- Step 5 -->
-                                <div class="d-flex justify-content-center align-items-start mb-3">
-                                    <div class="sd-step-pointer"></div>
-                                    <p class="sd-step-text">
+                                
+                                <div class="row justify-content-center my-3 align-items-center">
+                            <div class="col-md-4 my-3">
+                                <p style="color:#1f2937;font-size:18px;">
                                         <strong>View Leave Requests & Allocated Leaves</strong><br>
                                         On the <strong>Employee Time Off</strong> page, the portal user can view all recent and previous leave requests along with their current status.<br>
                                         Below this section, the <strong>Allocated Leaves</strong> table shows each leave type with:
@@ -356,50 +291,50 @@
                                         This helps employees clearly understand their available leave balance before submitting new requests.
                                     </p>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-8 my-3">
                                     <!-- replace with your real screenshot -->
                                     <img class="img-fluid rounded shadow-sm" src="5.png" alt="Install module">
                                 </div>
                                 <br /><br />
-                                <div class="col-md-12">
+                                <div class="col-md-8 my-3">
                                     <!-- replace with your real screenshot -->
                                     <img class="img-fluid rounded shadow-sm" src="6.png" alt="Install module">
                                 </div>
                                 <br /><br />
-                                <div class="d-flex justify-content-center align-items-start mb-3">
-                                    <div class="sd-step-pointer"></div>
-                                    <p class="sd-step-text">
+                                <div class="row justify-content-center my-3 align-items-center">
+                            <div class="col-md-4 my-3">
+                                <p style="color:#1f2937;font-size:18px;">
                                         <strong>Filter and Sort Leave Requests</strong><br>
                                         Portal users can filter, sort, or group their leave requests by date, status, or leave type using the available Filter, Sort By, and Group By options.
                                     </p>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-8 my-3">
                                     <!-- replace with your real screenshot -->
                                     <img class="img-fluid rounded shadow-sm" src="7.png" alt="Install module">
                                 </div>
                                 <br /><br />
-                                <div class="d-flex justify-content-center align-items-start mb-3">
-                                    <div class="sd-step-pointer"></div>
-                                    <p class="sd-step-text">
+                                <div class="row justify-content-center my-3 align-items-center">
+                            <div class="col-md-4 my-3">
+                                <p style="color:#1f2937;font-size:18px;">
                                         <strong>Create a New Leave Request</strong><br>
                                         Click on <strong>Create New</strong> to open the leave request form.
                                         Select the required <strong>Leave Type</strong>, add a brief description, and submit the request.
                                         Once submitted, the leave request will be sent for approval and its status will be updated accordingly.
                                     </p>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-8 my-3">
                                     <!-- replace with your real screenshot -->
                                     <img class="img-fluid rounded shadow-sm" src="8.png" alt="Install module">
                                 </div>
                                 <br /><br />
-                                <div class="col-md-12">
+                                <div class="col-md-8 my-3">
                                     <!-- replace with your real screenshot -->
                                     <img class="img-fluid rounded shadow-sm" src="9.png" alt="Install module">
                                 </div>
                                 <br /><br />
-                                <div class="d-flex justify-content-center align-items-start mb-3">
-                                    <div class="sd-step-pointer"></div>
-                                    <p class="sd-step-text">
+                                <div class="row justify-content-center my-3 align-items-center">
+                            <div class="col-md-4 my-3">
+                                <p style="color:#1f2937;font-size:18px;">
                                         <strong>Fill Leave Request Details</strong><br>
                                         Select the required <strong>Leave Type</strong> and, if needed, upload a supporting document.
                                         Choose the <strong>From Date</strong> and <strong>To Date</strong>; the system automatically calculates the duration.<br>
@@ -410,32 +345,32 @@
                                         Add a brief <strong>Description</strong> and click <strong>Submit</strong> to send the leave request for approval.
                                     </p>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-8 my-3">
                                     <!-- replace with your real screenshot -->
                                     <img class="img-fluid rounded shadow-sm" src="10.png" alt="Install module">
                                 </div>
                                 <br /><br />
-                                <div class="d-flex justify-content-center align-items-start mb-3">
-                                    <div class="sd-step-pointer"></div>
-                                    <p class="sd-step-text">
+                                <div class="row justify-content-center my-3 align-items-center">
+                            <div class="col-md-4 my-3">
+                                <p style="color:#1f2937;font-size:18px;">
                                         <strong>Approve or Refuse Leave</strong><br>
                                         Approvers can review leave requests under <strong>Time Off → Management → Time Off</strong> and approve or refuse them.
                                         Approved leaves are deducted from allocations and unpaid leaves impact payroll.
                                     </p>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-8 my-3">
                                     <img class="img-fluid rounded shadow-sm" src="11.png" alt="Install module">
                                 </div>
                                 <br /><br />
-                                <div class="d-flex justify-content-center align-items-start mb-3">
-                                    <div class="sd-step-pointer"></div>
-                                    <p class="sd-step-text">
+                                <div class="row justify-content-center my-3 align-items-center">
+                            <div class="col-md-4 my-3">
+                                <p style="color:#1f2937;font-size:18px;">
                                         <strong>Edit or Cancel Leave</strong><br>
                                         Employees can edit or cancel requests only while the status is <strong>To Approve</strong>.
                                         Once <strong>Approved</strong>, the request becomes read-only.
                                     </p>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-8 my-3">
                                     <img class="img-fluid rounded shadow-sm" src="12.png" alt="Install module">
                                 </div>
                                 <br /><br />
@@ -446,25 +381,32 @@
             </div>
         </section>
         <!-- Releases -->
-        <section class="mt-4">
-            <h2 class="sd-section-title">
-                <span>Releases</span>
-            </h2>
-            <div class="bg-white shadow-sm rounded-4 p-3 p-lg-4">
-                <h4 class="mb-1" style="font-size:16px;">
-                    <span class="fa fa-code-branch me-2 sd-primary"></span>
-                    <span>Version 19.0.1.0</span>
-                    <span class="ms-2 text-muted">| Released on : 14<sup>th</sup> December 2025</span>
-                </h4>
-                <div class="mt-3 ps-4">
-                    <span class="sd-release-badge">Initial Release</span>
-                    <p class="mt-3 mb-0">
-                        First release of the <strong>Portal Leave Request</strong> module, allowing employees to submit,
-                        track, and manage leave requests from the portal with approval workflow and allocation tracking.
-                    </p>
-                </div>
+         <section class="mt-4">
+        <h2 class="mb-4 text-center"
+            style="font-family:'Nunito',sans-serif;font-weight:700;">
+            <span style="display:inline-block;padding-bottom:0.4rem;border-bottom:3px solid #2563eb;">
+                Releases
+            </span>
+        </h2>
+
+        <div class="bg-white shadow-sm rounded-4 p-3 p-lg-4">
+            <h4 class="mb-1" style="font-size:16px;font-family:'Nunito',sans-serif;">
+                <span class="fa fa-code-fork" style="color:#2563eb;margin-right:8px;"></span>
+                <span>Version 19.0.1.0</span>
+                <span class="text-muted" style="margin-left:8px;">| Released on : 14<sup>th</sup> December 2025</span>
+            </h4>
+            <div class="mt-3 ps-4">
+                <span
+                    style="background-color:#2563eb;color:#f9fafb;padding:5px 12px;border-radius:999px;font-size:10px;">
+                    Initial
+                </span>
+                <p class="mt-3 mb-0">
+                    First release of the <strong>Portal Leave Request</strong> module, allowing employees to submit,
+                    track, and manage leave requests from the portal with approval workflow and allocation tracking.
+                </p>
             </div>
-        </section>
+        </div>
+    </section>
         <!-- FAQs -->
         <section class="mt-5">
             <h2 class="sd-section-title">
