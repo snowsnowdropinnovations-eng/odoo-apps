@@ -1,0 +1,967 @@
+<odoo>
+    <template id="portal_time_off_summary" name="Portal My Home : Time Off"
+              inherit_id="portal.portal_my_home">
+        <xpath expr="//div[contains(@class, 'o_portal_docs')]" position="inside">
+            <div class="o_portal_docs">
+                <t t-set="leave_count" t-value="request.env['hr.leave'].sudo().search_count([('employee_id.user_id','=', request.env.uid)])"/>
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/sd_leave_request_portal/static/description/portal_icon.png'"/>
+                    <t t-set="title">Time Off Summary</t>
+                    <t t-set="url" t-value="'/all/time/off'"/>
+                    <t t-set="text">Your total time off requests</t>
+                    <t t-set="placeholder_count" t-value="'leave_count'"/>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+            </div>
+        </xpath>
+    </template>
+
+
+    <template id="time_off_controller_portal_view_id" name="View All Time Offs">
+        <t t-call="website.layout">
+            <div class="container my-5">
+                <div class="card">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Employee Time Off</h4>
+                        <a href="/create/time/off" class="btn btn-light btn-sm">
+                            <i class="fa fa-plus me-2"></i>Create New
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <!-- Filter, Sort, and Group Controls -->
+                        <form method="GET" action="/all/time/off" class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <label class="form-label">Filter</label>
+                                <select name="filter_by" class="form-select rounded-pill">
+                                    <option value="" disabled="disabled" t-att-selected="filter_by == ''">Filter
+                                        By</option>
+                                    <option value="last_week" t-att-selected="filter_by == 'last_week'">Last
+                                        Week</option>
+                                    <option value="last_month" t-att-selected="filter_by == 'last_month'">Last
+                                        Month</option>
+                                    <option value="last_year" t-att-selected="filter_by == 'last_year'">Last
+                                        Year</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Sort By</label>
+                                <select name="sort_by" class="form-select rounded-pill">
+                                    <option value="" disabled="disabled" t-att-selected="sort_by == ''">Sort By</option>
+                                    <option value="request_date_from" t-att-selected="sort_by == 'request_date_from'">
+                                        Start Date</option>
+                                    <option value="request_date_to" t-att-selected="sort_by == 'request_date_to'">End
+                                        Date</option>
+                                    <option value="duration" t-att-selected="sort_by == 'duration'">Duration</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Group By</label>
+                                <select name="group_by" class="form-select rounded-pill">
+                                    <option value="none" disabled="disabled" t-att-selected="group_by == 'none'">Group
+                                        By</option>
+                                    <option value="type" t-att-selected="group_by == 'type'">Type</option>
+                                    <option value="state" t-att-selected="group_by == 'state'">State</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end gap-2">
+                                <button type="submit" class="btn btn-primary rounded-pill flex-grow-1">
+                                    <i class="fa fa-filter me-2"></i>Apply
+                                </button>
+                                <a href="/all/time/off" class="btn btn-outline-secondary rounded-pill">
+                                    <i class="fa fa-refresh me-1"></i>Reset
+                                </a>
+                            </div>
+                        </form>
+
+                        <!-- Time Off Table -->
+                        <div class="table-responsive">
+                            <t t-if="group_by == 'none'">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Time Off Type</th>
+                                            <th>Description</th>
+                                            <th>Start Date</th>
+                                            <th>End Date</th>
+                                            <th>Duration</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="data" t-as="time_off">
+                                            <tr>
+                                                <td><t t-esc="time_off['employee_name']"/></td>
+                                                <td><t t-esc="time_off['type']"/></td>
+                                                <td><t t-esc="time_off['description']"/></td>
+                                                <td><t t-esc="time_off['request_date_from']"/></td>
+                                                <td><t t-esc="time_off['request_date_to']"/></td>
+                                                <td><t t-esc="time_off['duration']"/></td>
+                                                <td>
+                                                    <t t-set="state" t-value="time_off['state']"/>
+                                                    <span t-if="state == 'validate'" class="badge bg-success">
+                                                        Approved</span>
+                                                    <span t-elif="state == 'validate1'" class="badge bg-primary">
+                                                        Validated</span>
+                                                    <span t-elif="state == 'confirm'" class="badge bg-info text-dark">To
+                                                        Approve</span>
+                                                    <span t-elif="state == 'refuse'" class="badge bg-danger">
+                                                        Refused</span>
+                                                    <span t-elif="state == 'cancel'" class="badge bg-secondary">
+                                                        Cancelled</span>
+                                                    <span t-else="" class="badge bg-warning text-dark">Draft</span>
+                                                </td>
+                                                <td>
+                                                    <button type="button"
+                                                            class="btn btn-outline-primary btn-sm rounded-circle"
+                                                            data-bs-toggle="modal"
+                                                            t-attf-data-bs-target="#timeOffModal#{time_off['id']}">
+                                                        <i class="fa fa-eye"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <tr t-if="not data">
+                                            <td colspan="9" class="text-center py-5">
+                                                <div class="empty-state">
+                                                    <i class="fa fa-calendar fa-3x text-muted mb-3"></i>
+                                                    <h5>No Time Off Records Found</h5>
+                                                    <p class="text-muted">There are no time off records available for
+                                                        the selected filter.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </t>
+                            <t t-else="">
+                                <t t-foreach="grouped_data" t-as="group_key">
+                                    <h5 class="mt-4 mb-3">
+                                        <t t-if="group_by == 'type'">Type: <t t-esc="group_key"/></t>
+                                        <t t-elif="group_by == 'state'">
+                                            <t t-set="state_label">
+                                                <t t-if="group_key == 'validate'">Approved</t>
+                                                <t t-elif="group_key == 'validate1'">Validated</t>
+                                                <t t-elif="group_key == 'confirm'">To Approve</t>
+                                                <t t-elif="group_key == 'refuse'">Refused</t>
+                                                <t t-elif="group_key == 'cancel'">Cancelled</t>
+                                                <t t-else="">Draft</t>
+                                            </t>
+                                            Status: <t t-esc="state_label"/>
+                                        </t>
+                                    </h5>
+                                    <table class="table table-hover align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Employee</th>
+                                                <th>Mode</th>
+                                                <th>Time Off Type</th>
+                                                <th>Description</th>
+                                                <th>Start Date</th>
+                                                <th>End Date</th>
+                                                <th>Duration</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="grouped_data[group_key]" t-as="time_off">
+                                                <tr>
+                                                    <td><t t-esc="time_off['employee_name']"/></td>
+                                                    <td>By Employee</td>
+                                                    <td><t t-esc="time_off['type']"/></td>
+                                                    <td><t t-esc="time_off['description']"/></td>
+                                                    <td><t t-esc="time_off['request_date_from']"/></td>
+                                                    <td><t t-esc="time_off['request_date_to']"/></td>
+                                                    <td><t t-esc="time_off['duration']"/></td>
+                                                    <td>
+                                                        <t t-set="state" t-value="time_off['state']"/>
+                                                        <span t-if="state == 'validate'" class="badge bg-success">
+                                                            Approved</span>
+                                                        <span t-elif="state == 'validate1'" class="badge bg-primary">
+                                                            Validated</span>
+                                                        <span t-elif="state == 'confirm'"
+                                                              class="badge bg-info text-dark">To Approve</span>
+                                                        <span t-elif="state == 'refuse'" class="badge bg-danger">
+                                                            Refused</span>
+                                                        <span t-elif="state == 'cancel'" class="badge bg-secondary">
+                                                            Cancelled</span>
+                                                        <span t-else="" class="badge bg-warning text-dark">Draft</span>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button"
+                                                                class="btn btn-outline-primary btn-sm rounded-circle"
+                                                                data-bs-toggle="modal"
+                                                                t-attf-data-bs-target="#timeOffModal#{time_off['id']}">
+                                                            <i class="fa fa-eye"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <t t-if="not grouped_data or not any(grouped_data.values())">
+                                    <div class="text-center py-5">
+                                        <div class="empty-state">
+                                            <i class="fa fa-calendar fa-3x text-muted mb-3"></i>
+                                            <h5>No Time Off Records Found</h5>
+                                            <p class="text-muted">There are no time off records available for the
+                                                selected filter.</p>
+                                        </div>
+                                    </div>
+                                </t>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+                <!--                <t t-foreach="data" t-as="time_off">-->
+                <!--                    <div class="modal fade" t-attf-id="timeOffModal#{time_off['id']}" tabindex="-1"-->
+                <!--                         t-attf-aria-labelledby="timeOffModalLabel#{time_off['id']}" aria-hidden="true">-->
+                <!--                        <div class="modal-dialog">-->
+                <!--                            <div class="modal-content">-->
+                <!--                                <div class="modal-header">-->
+                <!--                                    <h5 class="modal-title" t-attf-id="timeOffModalLabel#{time_off['id']}">Update-->
+                <!--                                        Leave</h5>-->
+                <!--                                    <button type="button" class="btn-close" data-bs-dismiss="modal"-->
+                <!--                                            aria-label="Close"></button>-->
+                <!--                                </div>-->
+                <!--                                <form t-attf-action="/time/off/update/#{time_off['id']}" method="POST"-->
+                <!--                                      enctype="multipart/form-data">-->
+                <!--                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>-->
+                <!--                                    <input type="hidden" name="state" t-att-value="time_off['state']"/>-->
+                <!--                                    <div class="modal-body">-->
+                <!--                                        <div role="alert" class="alert alert-danger"-->
+                <!--                                             t-if="time_off['state'] in ['refuse','cancel']">-->
+                <!--                                            <p class="m-0"><strong>Note: </strong>Time Off request has been-->
+                <!--                                                Refused/Rejected.</p>-->
+                <!--                                        </div>-->
+                <!--                                        <div role="alert" class="alert alert-info"-->
+                <!--                                             t-if="time_off['state'] in ['validate1', 'validate']">-->
+                <!--                                            <p class="m-0">-->
+                <!--                                                <strong>Note: </strong> You can't update Time Off request in-->
+                <!--                                                "<t t-if="time_off['state'] == 'validate'">Approved</t>-->
+                <!--                                                <t t-elif="time_off['state'] == 'validate1'">Validated</t>" state.-->
+                <!--                                            </p>-->
+                <!--                                        </div>-->
+
+                <!--                                        <div class="mb-3">-->
+                <!--                                            <label t-attf-for="description#{time_off['id']}" class="form-label">-->
+                <!--                                                Description *</label>-->
+                <!--                                            <input type="text" class="form-control"-->
+                <!--                                                   t-attf-id="description#{time_off['id']}" name="description"-->
+                <!--                                                   t-att-value="time_off['description']"-->
+                <!--                                                   t-att-readonly="time_off['state'] in ['validate','validate1','refuse'] and 'readonly' or None"/>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="mb-3">-->
+                <!--                                            <label t-attf-for="time_off_type#{time_off['id']}" class="form-label">Time-->
+                <!--                                                Off Type *</label>-->
+                <!--                                            <t t-if="time_off['state'] in ['validate', 'validate1', 'refuse']">-->
+                <!--                                                <input type="text" class="form-control"-->
+                <!--                                                       t-attf-id="time_off_type#{time_off['id']}" name="time_off_type"-->
+                <!--                                                       t-att-value="time_off['type']" readonly="readonly"/>-->
+                <!--                                            </t>-->
+                <!--                                            <t t-else="">-->
+                <!--                                                <select class="form-control" t-attf-id="time_off_type#{time_off['id']}"-->
+                <!--                                                        name="time_off_type"-->
+                <!--                                                        required="required"-->
+                <!--                                                        t-attf-onchange="handleLeaveTypeChange(this, #{time_off['id']})">-->
+                <!--                                                    <option value="">Select Time Off Type</option>-->
+                <!--                                                    <t t-foreach="all_types" t-as="type">-->
+                <!--                                                        <option t-att-value="type['id']"-->
+                <!--                                                                t-att-selected="type['id'] == time_off['holiday_status_id'] and 'selected' or None"-->
+                <!--                                                                t-att-data-leave-type="type['leave_type']"-->
+                <!--                                                                t-esc="type['name']"/>-->
+                <!--                                                    </t>-->
+                <!--                                                </select>-->
+                <!--                                            </t>-->
+                <!--                                        </div>-->
+
+                <!--                                        &lt;!&ndash; Attachment Field (Controlled by JavaScript) - FIXED &ndash;&gt;-->
+                <!--                                        <div class="mb-3" t-attf-id="attachment_field#{time_off['id']}"-->
+                <!--                                             t-att-style="time_off['type'] and 'sick' in time_off['type'].lower() and 'display: block;' or 'display: none;'">-->
+                <!--                                            <t t-if="not time_off['medical_attachments']">-->
+                <!--                                                <label t-attf-for="attachment_file#{time_off['id']}" class="form-label">-->
+                <!--                                                    Document Upload</label>-->
+                <!--                                                <input type="file" name="attachment_file"-->
+                <!--                                                       t-attf-id="attachment_file#{time_off['id']}" class="form-control"-->
+                <!--                                                       t-att-disabled="time_off['state'] in ['validate','validate1','refuse'] and 'disabled' or None"/>-->
+                <!--                                            </t>-->
+                <!--                                            &lt;!&ndash; Display existing attachments if any &ndash;&gt;-->
+                <!--                                            <t t-if="time_off['medical_attachments']">-->
+                <!--                                                <div class="mt-2">-->
+                <!--                                                    <p><strong>Existing Attachment(s):</strong></p>-->
+                <!--                                                    <ul>-->
+                <!--                                                        <t t-foreach="time_off['medical_attachments']"-->
+                <!--                                                           t-as="attachment">-->
+                <!--                                                            <li>-->
+                <!--                                                                <a t-att-href="attachment['url']" target="_blank"-->
+                <!--                                                                   t-esc="attachment['name']"/>-->
+                <!--                                                            </li>-->
+                <!--                                                        </t>-->
+                <!--                                                    </ul>-->
+                <!--                                                </div>-->
+                <!--                                            </t>-->
+                <!--                                        </div>-->
+
+                <!--                                        &lt;!&ndash; Half Day and Custom Hours Checkboxes - FIXED &ndash;&gt;-->
+                <!--                                        <div class="mb-3">-->
+                <!--                                            <div class="d-flex gap-4">-->
+                <!--                                                <div class="form-check">-->
+                <!--                                                    <input class="form-check-input" type="checkbox"-->
+                <!--                                                           t-attf-id="request_unit_half#{time_off['id']}"-->
+                <!--                                                           name="request_unit_half"-->
+                <!--                                                           t-att-checked="time_off['request_unit_half'] and 'checked' or None"-->
+                <!--                                                           t-att-disabled="time_off['state'] in ['validate','validate1','refuse'] and 'disabled' or None"-->
+                <!--                                                           t-attf-onchange="toggleHalfDay(#{time_off['id']})"/>-->
+                <!--                                                    <label class="form-check-label"-->
+                <!--                                                           t-attf-for="request_unit_half#{time_off['id']}">Half-->
+                <!--                                                        Day</label>-->
+                <!--                                                </div>-->
+                <!--                                                <div class="form-check">-->
+                <!--                                                    <input class="form-check-input" type="checkbox"-->
+                <!--                                                           t-attf-id="request_unit_hours#{time_off['id']}"-->
+                <!--                                                           name="request_unit_hours"-->
+                <!--                                                           t-att-checked="time_off['request_unit_hours'] and 'checked' or None"-->
+                <!--                                                           t-att-disabled="time_off['state'] in ['validate','validate1','refuse'] and 'disabled' or None"-->
+                <!--                                                           t-attf-onchange="toggleCustomHours(#{time_off['id']})"/>-->
+                <!--                                                    <label class="form-check-label"-->
+                <!--                                                           t-attf-for="request_unit_hours#{time_off['id']}">Custom-->
+                <!--                                                        Hours</label>-->
+                <!--                                                </div>-->
+                <!--                                            </div>-->
+                <!--                                        </div>-->
+
+
+                <!--                                        <div class="mb-3 row">-->
+                <!--                                            <div class="col" t-attf-id="start_date_col#{time_off['id']}">-->
+                <!--                                                <label t-attf-for="start_date#{time_off['id']}" class="form-label">Date-->
+                <!--                                                    *</label>-->
+                <!--                                                <input type="datetime-local" class="form-control"-->
+                <!--                                                       t-attf-id="start_date#{time_off['id']}" name="start_date"-->
+                <!--                                                       t-att-value="time_off['request_date_from_raw'].strftime('%Y-%m-%dT%H:%M') if time_off['request_date_from_raw'] else ''"-->
+                <!--                                                       t-att-readonly="time_off['state'] in ['validate','validate1','refuse'] and 'readonly' or None"/>-->
+                <!--                                            </div>-->
+                <!--                                            <div class="col" t-attf-id="end_date_col#{time_off['id']}">-->
+                <!--                                                <label t-attf-for="end_date#{time_off['id']}" class="form-label">End-->
+                <!--                                                    Date</label>-->
+                <!--                                                <input type="datetime-local" class="form-control"-->
+                <!--                                                       t-attf-id="end_date#{time_off['id']}" name="end_date"-->
+                <!--                                                       t-att-value="time_off['request_date_to_raw'].strftime('%Y-%m-%dT%H:%M') if time_off['request_date_to_raw'] else ''"-->
+                <!--                                                       t-att-readonly="time_off['state'] in ['validate','validate1','refuse'] and 'readonly' or None"/>-->
+                <!--                                            </div>-->
+                <!--                                            &lt;!&ndash; Morning/Evening Selection (Initially Hidden) &ndash;&gt;-->
+                <!--                                            <div class="col" t-attf-id="period_col#{time_off['id']}"-->
+                <!--                                                 style="display: none;">-->
+                <!--                                                <label t-attf-for="half_morning_or_evening#{time_off['id']}"-->
+                <!--                                                       class="form-label">Morning/Afternoon</label>-->
+                <!--                                                <select class="form-control"-->
+                <!--                                                        t-attf-id="half_morning_or_evening#{time_off['id']}"-->
+                <!--                                                        name="half_morning_or_evening"-->
+                <!--                                                        t-att-disabled="time_off['state'] in ['validate','validate1','refuse'] and 'disabled' or None">-->
+                <!--                                                    <option value="">Select Period</option>-->
+                <!--                                                    <option value="am"-->
+                <!--                                                            t-att-selected="time_off['request_date_from_period'] == 'am' and 'selected' or None">-->
+                <!--                                                        Morning</option>-->
+                <!--                                                    <option value="pm"-->
+                <!--                                                            t-att-selected="time_off['request_date_from_period'] == 'pm' and 'selected' or None">-->
+                <!--                                                        Afternoon</option>-->
+                <!--                                                </select>-->
+                <!--                                            </div>-->
+                <!--                                        </div>-->
+
+                <!--                                        &lt;!&ndash; Custom Hours Fields (Initially Hidden) &ndash;&gt;-->
+                <!--                                        <div t-attf-id="custom_hours_fields#{time_off['id']}" style="display: none;">-->
+                <!--                                            <div class="row mb-3">-->
+                <!--                                                <div class="col">-->
+                <!--                                                    <label t-attf-for="from_time#{time_off['id']}" class="form-label">-->
+                <!--                                                        From Time *</label>-->
+                <!--                                                    <input type="time" class="form-control"-->
+                <!--                                                           t-attf-id="from_time#{time_off['id']}" name="from_time"-->
+                <!--                                                           t-att-value="time_off['request_hour_from'] and '{:02d}:{:02d}'.format(int(time_off['request_hour_from']), int((time_off['request_hour_from'] % 1) * 60)) or ''"-->
+                <!--                                                           t-att-readonly="time_off['state'] in ['validate','validate1','refuse'] and 'readonly' or None"-->
+                <!--                                                           t-attf-onchange="calculateDuration(#{time_off['id']})"/>-->
+                <!--                                                </div>-->
+                <!--                                                <div class="col">-->
+                <!--                                                    <label t-attf-for="to_time#{time_off['id']}" class="form-label">To-->
+                <!--                                                        Time *</label>-->
+                <!--                                                    <input type="time" class="form-control"-->
+                <!--                                                           t-attf-id="to_time#{time_off['id']}" name="to_time"-->
+                <!--                                                           t-att-value="time_off['request_hour_to'] and '{:02d}:{:02d}'.format(int(time_off['request_hour_to']), int((time_off['request_hour_to'] % 1) * 60)) or ''"-->
+                <!--                                                           t-att-readonly="time_off['state'] in ['validate','validate1','refuse'] and 'readonly' or None"-->
+                <!--                                                           t-attf-onchange="calculateDuration(#{time_off['id']})"/>-->
+                <!--                                                </div>-->
+                <!--                                                <div class="col">-->
+                <!--                                                    <label t-attf-for="overall_hours#{time_off['id']}"-->
+                <!--                                                           class="form-label">Duration</label>-->
+                <!--                                                    <input type="text" class="form-control"-->
+                <!--                                                           t-attf-id="overall_hours#{time_off['id']}"-->
+                <!--                                                           name="overall_hours"-->
+                <!--                                                           placeholder="Auto calculated" readonly="readonly"/>-->
+                <!--                                                </div>-->
+                <!--                                            </div>-->
+                <!--                                        </div>-->
+
+                <!--                                        <t t-if="time_off['state'] in ['validate', 'validate1']">-->
+                <!--                                            <input type="text" class="form-control" t-att-value="time_off['duration']"-->
+                <!--                                                   t-att-readonly="time_off['state'] in ['validate','refuse'] and 'readonly' or None"-->
+                <!--                                                   t-att-disabled="True"/>-->
+                <!--                                        </t>-->
+                <!--                                    </div>-->
+                <!--                                    <div class="modal-footer">-->
+                <!--                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">-->
+                <!--                                            Close</button>-->
+                <!--                                        <button type="submit" class="btn btn-primary"-->
+                <!--                                                t-att-disabled="time_off['state'] in ['validate','validate1','refuse'] and 'disabled' or None">-->
+                <!--                                            Update-->
+                <!--                                        </button>-->
+                <!--                                        <button type="submit"-->
+                <!--                                                t-att-formaction="'/time/off/cancel/' + str(time_off['id'])"-->
+                <!--                                                class="btn btn-danger"-->
+                <!--                                                t-att-disabled="time_off['state'] in ['validate','validate1','refuse'] and 'disabled' or None">-->
+                <!--                                            Refuse/Cancel-->
+                <!--                                        </button>-->
+                <!--                                    </div>-->
+                <!--                                </form>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                </t>-->
+                <t t-foreach="data" t-as="time_off">
+                    <div class="modal fade" t-attf-id="timeOffModal#{time_off['id']}" tabindex="-1"
+                         t-attf-aria-labelledby="timeOffModalLabel#{time_off['id']}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" t-attf-id="timeOffModalLabel#{time_off['id']}">Update
+                                        Leave</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <form t-attf-action="/time/off/update/#{time_off['id']}" method="POST"
+                                      enctype="multipart/form-data">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="state" t-att-value="time_off['state']"/>
+                                    <div class="modal-body">
+                                        <div role="alert" class="alert alert-danger"
+                                             t-if="time_off['state'] in ['refuse','cancel']">
+                                            <p class="m-0"><strong>Note: </strong>Time Off request has been
+                                                Refused/Rejected.</p>
+                                        </div>
+                                        <div role="alert" class="alert alert-info"
+                                             t-if="time_off['state'] in ['validate1', 'validate']">
+                                            <p class="m-0">
+                                                <strong>Note: </strong> You can't update Time Off request in
+                                                "<t t-if="time_off['state'] == 'validate'">Approved</t>
+                                                <t t-elif="time_off['state'] == 'validate1'">Validated</t>" state.
+                                            </p>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label t-attf-for="description#{time_off['id']}" class="form-label">
+                                                Description *</label>
+                                            <input type="text" class="form-control"
+                                                   t-attf-id="description#{time_off['id']}" name="description"
+                                                   t-att-value="time_off['description']"
+                                                   t-att-readonly="time_off['state'] in ['validate','validate1','refuse'] and 'readonly' or None"/>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label t-attf-for="time_off_type#{time_off['id']}" class="form-label">Time
+                                                Off Type *</label>
+                                            <t t-if="time_off['state'] in ['validate', 'validate1', 'refuse']">
+                                                <input type="text" class="form-control"
+                                                       t-attf-id="time_off_type#{time_off['id']}" name="time_off_type"
+                                                       t-att-value="time_off['type']" readonly="readonly"/>
+                                            </t>
+                                            <t t-else="">
+                                                <select class="form-control" t-attf-id="time_off_type#{time_off['id']}"
+                                                        name="time_off_type"
+                                                        required="required"
+                                                        t-attf-onchange="handleLeaveTypeChange(this, #{time_off['id']})">
+                                                    <option value="">Select Time Off Type</option>
+                                                    <t t-foreach="all_types" t-as="type">
+                                                        <option t-att-value="type['id']"
+                                                                t-att-selected="type['id'] == time_off['holiday_status_id'] and 'selected' or None"
+                                                                t-att-data-leave-type="type['leave_type']"
+                                                                t-esc="type['name']"/>
+                                                    </t>
+                                                </select>
+                                            </t>
+                                        </div>
+
+                                        <!-- Attachment Field (Controlled by JavaScript) -->
+                                        <div class="mb-3" t-attf-id="attachment_field#{time_off['id']}"
+                                             t-att-style="time_off['type'] and 'sick' in time_off['type'].lower() and 'display: block;' or 'display: none;'">
+                                            <t t-if="not time_off['medical_attachments']">
+                                                <label t-attf-for="attachment_file#{time_off['id']}" class="form-label">
+                                                    Document Upload</label>
+                                                <input type="file" name="attachment_file"
+                                                       t-attf-id="attachment_file#{time_off['id']}" class="form-control"
+                                                       t-att-disabled="time_off['state'] in ['validate','validate1','refuse'] and 'disabled' or None"/>
+                                            </t>
+                                            <t t-if="time_off['medical_attachments']">
+                                                <div class="mt-2">
+                                                    <p><strong>Existing Attachment(s):</strong></p>
+                                                    <ul>
+                                                        <t t-foreach="time_off['medical_attachments']"
+                                                           t-as="attachment">
+                                                            <li>
+                                                                <a t-att-href="attachment['url']" target="_blank"
+                                                                   t-esc="attachment['name']"/>
+                                                            </li>
+                                                        </t>
+                                                    </ul>
+                                                </div>
+                                            </t>
+                                        </div>
+
+                                        <!-- Date/Time Fields Section - Updated -->
+                                        <div class="mb-3">
+                                            <!-- Checkboxes Section - Only show for editable states -->
+                                            <div class="mb-3" t-if="time_off['state'] not in ['validate', 'validate1']">
+                                                <div class="d-flex gap-4">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox"
+                                                               t-attf-id="request_unit_half#{time_off['id']}"
+                                                               name="request_unit_half"
+                                                               t-att-checked="time_off['request_unit_half'] and 'checked' or None"
+                                                               t-att-disabled="time_off['state'] in ['validate','validate1','refuse'] and 'disabled' or None"
+                                                               t-attf-onchange="toggleHalfDay(#{time_off['id']})"/>
+                                                        <label class="form-check-label"
+                                                               t-attf-for="request_unit_half#{time_off['id']}">Half
+                                                            Day</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox"
+                                                               t-attf-id="request_unit_hours#{time_off['id']}"
+                                                               name="request_unit_hours"
+                                                               t-att-checked="time_off['request_unit_hours'] and 'checked' or None"
+                                                               t-att-disabled="time_off['state'] in ['validate','validate1','refuse'] and 'disabled' or None"
+                                                               t-attf-onchange="toggleCustomHours(#{time_off['id']})"/>
+                                                        <label class="form-check-label"
+                                                               t-attf-for="request_unit_hours#{time_off['id']}">Custom
+                                                            Hours</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <!-- For Half Day Approved Requests -->
+                                            <t t-if="time_off['request_unit_half'] and time_off['state'] in ['validate', 'validate1']">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label class="form-label">Date *</label>
+                                                        <input type="datetime-local" class="form-control"
+                                                               t-att-value="time_off['request_date_from_raw'].strftime('%Y-%m-%dT%H:%M') if time_off['request_date_from_raw'] else ''"
+                                                               readonly="readonly"/>
+                                                    </div>
+                                                    <div class="col">
+                                                        <label class="form-label">Morning/Afternoon</label>
+                                                        <input type="text" class="form-control"
+                                                               t-att-value="'Morning' if time_off['request_date_from_period'] == 'am' else 'Afternoon' if time_off['request_date_from_period'] == 'pm' else ''"
+                                                               readonly="readonly"/>
+                                                    </div>
+                                                    <div class="col">
+                                                        <label class="form-label">Duration</label>
+                                                        <input type="text" class="form-control"
+                                                               t-att-value="'0.5 days'"
+                                                               readonly="readonly"/>
+                                                    </div>
+                                                </div>
+                                            </t>
+
+                                            <!-- For Custom Hours Approved Requests -->
+                                            <t t-elif="time_off['request_unit_hours'] and time_off['state'] in ['validate', 'validate1']">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label class="form-label">Date *</label>
+                                                        <input type="datetime-local" class="form-control"
+                                                               t-att-value="time_off['request_date_from_raw'].strftime('%Y-%m-%dT%H:%M') if time_off['request_date_from_raw'] else ''"
+                                                               readonly="readonly"/>
+                                                    </div>
+                                                    <div class="col">
+                                                        <label class="form-label">Hour From</label>
+                                                        <input type="time" class="form-control"
+                                                               t-att-value="time_off['request_hour_from'] and '{:02d}:{:02d}'.format(int(time_off['request_hour_from']), int((time_off['request_hour_from'] % 1) * 60)) or ''"
+                                                               readonly="readonly"/>
+                                                    </div>
+                                                    <div class="col">
+                                                        <label class="form-label">Hour To</label>
+                                                        <input type="time" class="form-control"
+                                                               t-att-value="time_off['request_hour_to'] and '{:02d}:{:02d}'.format(int(time_off['request_hour_to']), int((time_off['request_hour_to'] % 1) * 60)) or ''"
+                                                               readonly="readonly"/>
+                                                    </div>
+                                                    <div class="col">
+                                                        <label class="form-label">Duration</label>
+                                                        <input type="text" class="form-control"
+                                                               t-att-value="time_off['duration']"
+                                                               readonly="readonly"/>
+                                                    </div>
+                                                </div>
+                                            </t>
+
+                                            <!-- For Regular Full Day Approved Requests -->
+                                            <t t-elif="time_off['state'] in ['validate', 'validate1']">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label class="form-label">Date *</label>
+                                                        <input type="datetime-local" class="form-control"
+                                                               t-att-value="time_off['request_date_from_raw'].strftime('%Y-%m-%dT%H:%M') if time_off['request_date_from_raw'] else ''"
+                                                               readonly="readonly"/>
+                                                    </div>
+                                                    <div class="col">
+                                                        <label class="form-label">End Date</label>
+                                                        <input type="datetime-local" class="form-control"
+                                                               t-att-value="time_off['request_date_to_raw'].strftime('%Y-%m-%dT%H:%M') if time_off['request_date_to_raw'] else ''"
+                                                               readonly="readonly"/>
+                                                    </div>
+                                                    <div class="col">
+                                                        <label class="form-label">Duration</label>
+                                                        <input type="text" class="form-control"
+                                                               t-att-value="time_off['duration']"
+                                                               readonly="readonly"/>
+                                                    </div>
+                                                </div>
+                                            </t>
+
+                                            <!-- For Editable Requests (Draft, Refuse, Cancel states) -->
+                                            <t t-else="">
+                                                <div class="row">
+                                                    <div class="col" t-attf-id="start_date_col#{time_off['id']}">
+                                                        <label t-attf-for="start_date#{time_off['id']}"
+                                                               class="form-label">Date *</label>
+                                                        <input type="datetime-local" class="form-control"
+                                                               t-attf-id="start_date#{time_off['id']}" name="start_date"
+                                                               t-att-value="time_off['request_date_from_raw'].strftime('%Y-%m-%dT%H:%M') if time_off['request_date_from_raw'] else ''"
+                                                               t-att-readonly="time_off['state'] in ['validate','validate1','refuse'] and 'readonly' or None"/>
+                                                    </div>
+                                                    <div class="col" t-attf-id="end_date_col#{time_off['id']}">
+                                                        <label t-attf-for="end_date#{time_off['id']}"
+                                                               class="form-label">End Date</label>
+                                                        <input type="datetime-local" class="form-control"
+                                                               t-attf-id="end_date#{time_off['id']}" name="end_date"
+                                                               t-att-value="time_off['request_date_to_raw'].strftime('%Y-%m-%dT%H:%M') if time_off['request_date_to_raw'] else ''"
+                                                               t-att-readonly="time_off['state'] in ['validate','validate1','refuse'] and 'readonly' or None"/>
+                                                    </div>
+                                                    <!-- Morning/Evening Selection (Initially Hidden) -->
+                                                    <div class="col" t-attf-id="period_col#{time_off['id']}"
+                                                         style="display: none;">
+                                                        <label t-attf-for="half_morning_or_evening#{time_off['id']}"
+                                                               class="form-label">Morning/Afternoon</label>
+                                                        <select class="form-control"
+                                                                t-attf-id="half_morning_or_evening#{time_off['id']}"
+                                                                name="half_morning_or_evening"
+                                                                t-att-disabled="time_off['state'] in ['validate','validate1','refuse'] and 'disabled' or None">
+                                                            <option value="">Select Period</option>
+                                                            <option value="am"
+                                                                    t-att-selected="time_off['request_date_from_period'] == 'am' and 'selected' or None">
+                                                                Morning</option>
+                                                            <option value="pm"
+                                                                    t-att-selected="time_off['request_date_from_period'] == 'pm' and 'selected' or None">
+                                                                Afternoon</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Custom Hours Fields (Initially Hidden) -->
+                                                <div t-attf-id="custom_hours_fields#{time_off['id']}"
+                                                     style="display: none;">
+                                                    <div class="row mb-3">
+                                                        <div class="col">
+                                                            <label t-attf-for="from_time#{time_off['id']}"
+                                                                   class="form-label">From Time *</label>
+                                                            <input type="time" class="form-control"
+                                                                   t-attf-id="from_time#{time_off['id']}"
+                                                                   name="from_time"
+                                                                   t-att-value="time_off['request_hour_from'] and '{:02d}:{:02d}'.format(int(time_off['request_hour_from']), int((time_off['request_hour_from'] % 1) * 60)) or ''"
+                                                                   t-att-readonly="time_off['state'] in ['validate','validate1','refuse'] and 'readonly' or None"
+                                                                   t-attf-onchange="calculateDuration(#{time_off['id']})"/>
+                                                        </div>
+                                                        <div class="col">
+                                                            <label t-attf-for="to_time#{time_off['id']}"
+                                                                   class="form-label">To Time *</label>
+                                                            <input type="time" class="form-control"
+                                                                   t-attf-id="to_time#{time_off['id']}" name="to_time"
+                                                                   t-att-value="time_off['request_hour_to'] and '{:02d}:{:02d}'.format(int(time_off['request_hour_to']), int((time_off['request_hour_to'] % 1) * 60)) or ''"
+                                                                   t-att-readonly="time_off['state'] in ['validate','validate1','refuse'] and 'readonly' or None"
+                                                                   t-attf-onchange="calculateDuration(#{time_off['id']})"/>
+                                                        </div>
+                                                        <div class="col">
+                                                            <label t-attf-for="overall_hours#{time_off['id']}"
+                                                                   class="form-label">Duration</label>
+                                                            <input type="text" class="form-control"
+                                                                   t-attf-id="overall_hours#{time_off['id']}"
+                                                                   name="overall_hours"
+                                                                   placeholder="Auto calculated" readonly="readonly"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            Close</button>
+                                        <button type="submit" class="btn btn-primary"
+                                                t-att-disabled="time_off['state'] in ['validate','validate1','refuse'] and 'disabled' or None">
+                                            Update
+                                        </button>
+                                        <button type="submit"
+                                                t-att-formaction="'/time/off/cancel/' + str(time_off['id'])"
+                                                class="btn btn-danger"
+                                                t-att-disabled="time_off['state'] in ['validate','validate1','refuse'] and 'disabled' or None">
+                                            Refuse/Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- JavaScript for Modal Functionality -->
+                <script type="text/javascript">
+                    function toggleAttachmentField(timeOffId) {
+                    const leaveTypeInput = document.getElementById(`time_off_type${timeOffId}`);
+                    const attachmentField = document.getElementById(`attachment_field${timeOffId}`);
+                    let leaveType = null;
+
+                    // Determine leave type based on input or select
+                    if (leaveTypeInput &amp;&amp; leaveTypeInput.tagName === 'INPUT' &amp;&amp; leaveTypeInput.readOnly)
+                    {
+                    // For readonly input (approved state), use the value directly
+                    leaveType = leaveTypeInput.value.toLowerCase(); // Assuming value is "Sick Leave"
+                    } else if (leaveTypeInput &amp;&amp; leaveTypeInput.tagName === 'SELECT') {
+                    // For select (editable state), get the selected option
+                    const selectedOption = leaveTypeInput.options[leaveTypeInput.selectedIndex];
+                    leaveType = selectedOption ? selectedOption.getAttribute('data-leave-type') : null;
+                    }
+
+                    // Show attachment field for sick leave
+                    if (leaveType &amp;&amp; leaveType.includes('sick')) {
+                    attachmentField.style.display = 'block';
+                    } else {
+                    attachmentField.style.display = 'none';
+                    }
+                    }
+
+                    function handleLeaveTypeChange(selectElement, timeOffId) {
+                    const selectedOption = selectElement.options[selectElement.selectedIndex];
+                    const leaveType = selectedOption.getAttribute('data-leave-type');
+                    const halfDayCheckbox = document.getElementById(`request_unit_half${timeOffId}`);
+                    const customHoursCheckbox = document.getElementById(`request_unit_hours${timeOffId}`);
+
+                    if (leaveType === 'half_day') {
+                    halfDayCheckbox.checked = true;
+                    customHoursCheckbox.checked = false;
+                    customHoursCheckbox.disabled = true;
+                    toggleHalfDay(timeOffId);
+                    toggleCustomHours(timeOffId);
+                    } else {
+                    halfDayCheckbox.checked = false;
+                    customHoursCheckbox.disabled = false;
+                    toggleHalfDay(timeOffId);
+                    toggleCustomHours(timeOffId);
+                    }
+                    toggleAttachmentField(timeOffId); // Update attachment field visibility
+                    }
+
+                    function toggleHalfDay(timeOffId) {
+                    const halfDayCheckbox = document.getElementById(`request_unit_half${timeOffId}`);
+                    const customHoursCheckbox = document.getElementById(`request_unit_hours${timeOffId}`);
+                    const endDateCol = document.getElementById(`end_date_col${timeOffId}`);
+                    const periodCol = document.getElementById(`period_col${timeOffId}`);
+                    const endDateInput = document.getElementById(`end_date${timeOffId}`);
+                    const periodSelect = document.getElementById(`half_morning_or_evening${timeOffId}`);
+                    const state = document.querySelector(`#timeOffModal${timeOffId} [name="state"]`)?.value || '';
+
+                    // Skip if in readonly states - FIXED: Use includes() instead of 'in'
+                    if (['validate', 'validate1', 'refuse'].includes(state)) {
+                    return;
+                    }
+
+                    if (halfDayCheckbox.checked) {
+                    customHoursCheckbox.checked = false;
+                    customHoursCheckbox.disabled = true;
+                    toggleCustomHours(timeOffId);
+                    endDateCol.style.display = 'none';
+                    periodCol.style.display = 'block';
+                    endDateInput.removeAttribute('required');
+                    periodSelect.setAttribute('required', 'required');
+                    endDateInput.value = '';
+                    } else {
+                    customHoursCheckbox.disabled = false;
+                    endDateCol.style.display = 'block';
+                    periodCol.style.display = 'none';
+                    endDateInput.setAttribute('required', 'required');
+                    periodSelect.removeAttribute('required');
+                    periodSelect.value = '';
+                    }
+                    }
+
+                    function toggleCustomHours(timeOffId) {
+                    const customHoursCheckbox = document.getElementById(`request_unit_hours${timeOffId}`);
+                    const halfDayCheckbox = document.getElementById(`request_unit_half${timeOffId}`);
+                    const startDateCol = document.getElementById(`start_date_col${timeOffId}`);
+                    const endDateCol = document.getElementById(`end_date_col${timeOffId}`);
+                    const customHoursFields = document.getElementById(`custom_hours_fields${timeOffId}`);
+                    const startDateInput = document.getElementById(`start_date${timeOffId}`);
+                    const endDateInput = document.getElementById(`end_date${timeOffId}`);
+                    const fromTime = document.getElementById(`from_time${timeOffId}`);
+                    const toTime = document.getElementById(`to_time${timeOffId}`);
+                    const state = document.querySelector(`#timeOffModal${timeOffId} [name="state"]`)?.value || '';
+
+                    // Skip if in readonly states - FIXED: Use includes() instead of 'in'
+                    if (['validate', 'validate1', 'refuse'].includes(state)) {
+                    return;
+                    }
+
+                    if (customHoursCheckbox.checked) {
+                    halfDayCheckbox.checked = false;
+                    halfDayCheckbox.disabled = true;
+                    toggleHalfDay(timeOffId);
+                    startDateCol.style.display = 'block';
+                    endDateCol.style.display = 'none';
+                    customHoursFields.style.display = 'block';
+                    startDateInput.setAttribute('required', 'required');
+                    endDateInput.removeAttribute('required');
+                    fromTime.setAttribute('required', 'required');
+                    toTime.setAttribute('required', 'required');
+                    endDateInput.value = '';
+                    } else {
+                    halfDayCheckbox.disabled = false;
+                    startDateCol.style.display = 'block';
+                    endDateCol.style.display = 'block';
+                    customHoursFields.style.display = 'none';
+                    startDateInput.setAttribute('required', 'required');
+                    endDateInput.setAttribute('required', 'required');
+                    fromTime.removeAttribute('required');
+                    toTime.removeAttribute('required');
+                    fromTime.value = '';
+                    toTime.value = '';
+                    document.getElementById(`overall_hours${timeOffId}`).value = '';
+                    }
+                    }
+
+                    function calculateDuration(timeOffId) {
+                    const fromTime = document.getElementById(`from_time${timeOffId}`).value;
+                    const toTime = document.getElementById(`to_time${timeOffId}`).value;
+                    const durationField = document.getElementById(`overall_hours${timeOffId}`);
+
+                    if (fromTime &amp;&amp; toTime) {
+                    const from = new Date(`2000-01-01T${fromTime}:00`);
+                    const to = new Date(`2000-01-01T${toTime}:00`);
+                    const breakStart = new Date(`2000-01-01T12:00:00`);
+                    const breakEnd = new Date(`2000-01-01T13:00:00`);
+
+                    if (to > from) {
+                    let diffMs = to - from;
+                    let breakOverlapMs = 0;
+
+                    // Check if the time range overlaps with the break (12 PM - 1 PM)
+                    if (from
+                    &lt; breakEnd
+                    &amp;&amp; to > breakStart) {
+                    const overlapStart = Math.max(from, breakStart);
+                    const overlapEnd = Math.min(to, breakEnd);
+                    breakOverlapMs = overlapEnd - overlapStart;
+                    }
+
+                    // Subtract the break overlap (if any) from the total duration
+                    const adjustedDiffMs = diffMs - breakOverlapMs;
+                    const diffHours = adjustedDiffMs / (1000 * 60 * 60);
+
+                    if (diffHours >= 0) {
+                    durationField.value = `${diffHours.toFixed(1)} hours`;
+                    } else {
+                    durationField.value = 'Invalid time range after break adjustment';
+                    }
+                    } else {
+                    durationField.value = 'Invalid time range';
+                    }
+                    } else {
+                    durationField.value = '';
+                    }
+                    }
+
+                    function initializeModalState(timeOffId) {
+                    const halfDayCheckbox = document.getElementById(`request_unit_half${timeOffId}`);
+                    const customHoursCheckbox = document.getElementById(`request_unit_hours${timeOffId}`);
+                    const state = document.querySelector(`#timeOffModal${timeOffId} [name="state"]`)?.value || '';
+
+                    // Set readonly/disabled state for checkboxes based on state
+                    if (['validate', 'validate1', 'refuse'].includes(state)) {
+                    if (halfDayCheckbox) {
+                    halfDayCheckbox.disabled = true;
+                    }
+                    if (customHoursCheckbox) {
+                    customHoursCheckbox.disabled = true;
+                    }
+                    }
+
+                    if (halfDayCheckbox &amp;&amp; halfDayCheckbox.checked) {
+                    toggleHalfDay(timeOffId);
+                    }
+                    if (customHoursCheckbox &amp;&amp; customHoursCheckbox.checked) {
+                    toggleCustomHours(timeOffId);
+                    }
+                    toggleAttachmentField(timeOffId); // Initialize attachment field visibility
+                    }
+
+                    document.addEventListener('DOMContentLoaded', function() {
+                    const modals = document.querySelectorAll('[id^="timeOffModal"]');
+                    modals.forEach(function(modal) {
+                    const timeOffId = modal.id.replace('timeOffModal', '');
+                    modal.addEventListener('shown.bs.modal', function() {
+                    initializeModalState(timeOffId);
+                    });
+                    initializeModalState(timeOffId);
+                    });
+                    });
+                </script>
+
+
+            </div>
+            <div class="container my-5">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Allocated Leaves</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Leave Type</th>
+                                        <th>Allocated Leaves</th>
+                                        <th>Requested Leaves</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="leaves_info" t-as="type">
+                                        <tr>
+                                            <td><t t-esc="type['Leave_type']"/></td>
+                                            <td><t t-esc="type['allocated']"/></td>
+                                            <td><t t-esc="type['taken']"/></td>
+                                        </tr>
+                                    </t>
+                                    <tr t-if="not leaves_info">
+                                        <td colspan="3" class="text-center py-5">
+                                            <div class="empty-state">
+                                                <i class="fa fa-calendar fa-3x text-muted mb-3"></i>
+                                                <h5>No Allocated Leaves Found</h5>
+                                                <p class="text-muted">There are no allocated leave records
+                                                    available.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
