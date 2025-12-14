@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_attendance_history" name="Portal My Home : Attendance History"
+              inherit_id="portal.portal_my_home">
+        <xpath expr="//div[contains(@class, 'o_portal_docs')]" position="inside">
+            <t t-set="attendance_count" t-value="request.env['hr.attendance'].sudo().search_count([('employee_id.user_id','=', request.env.uid)])"/>
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/sd_attendance_portal/static/description/attendance_history_icon.png'"/>
+                <t t-set="title">Attendance History</t>
+                <t t-set="url" t-value="'/fetch/attendance'"/>
+                <t t-set="text">Total attendance entries</t>
+                <t t-set="placeholder_count" t-value="'attendance_count'"/>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+        </xpath>
+    </template>
+
+
+    <template id="attendance_history_fetcher_id" name="Attendance History">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <div class="container mt-4 mb56">
+                    <!-- Page Header -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-flex align-items-center mb-4">
+                                <div>
+                                    <h1 class="h2 mb-0">Attendance History</h1>
+                                    <p class="text-muted mb-0">View your attendance records and working hours</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter Form -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-light border-0">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fa fa-filter me-2"></i>Filter Attendance Records
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <form method="GET" action="/fetch/attendance" class="row g-3">
+                                        <div class="col-md-3">
+                                            <label for="check_in" class="form-label">Check In Date</label>
+                                            <input type="date" class="form-control" id="check_in" name="check_in"
+                                                   t-att-value="request.params.get('check_in', '')"/>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="check_out" class="form-label">Check Out Date</label>
+                                            <input type="date" class="form-control" id="check_out" name="check_out"
+                                                   t-att-value="request.params.get('check_out', '')"/>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="filter_by" class="form-label">Filter By</label>
+                                            <select class="form-control" id="filter_by" name="filter_by">
+                                                <option value="" disabled="disabled"
+                                                        t-att-selected="not request.params.get('filter_by')">Filter
+                                                    By</option>
+                                                <option value="last_week"
+                                                        t-att-selected="request.params.get('filter_by') == 'last_week'">
+                                                    Last Week
+                                                </option>
+                                                <option value="last_month"
+                                                        t-att-selected="request.params.get('filter_by') == 'last_month'">
+                                                    Last Month
+                                                </option>
+                                                <option value="last_year"
+                                                        t-att-selected="request.params.get('filter_by') == 'last_year'">
+                                                    Last Year
+                                                </option>
+                                            </select>
+
+                                        </div>
+                                        <div class="col-md-3 d-flex align-items-end">
+                                            <button type="submit" class="btn btn-primary me-2">
+                                                <i class="fa fa-search me-1"></i>Search
+                                            </button>
+                                            <a href="/fetch/attendance" class="btn btn-outline-secondary">
+                                                <i class="fa fa-refresh me-1"></i>Reset
+                                            </a>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attendance Records -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-primary text-white border-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="card-title mb-0">
+                                            <i class="fa fa-list me-2"></i>Attendance Records
+                                        </h5>
+                                        <span class="badge badge-light">
+                                            <t t-esc="total_records or 0"/> Total Records
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <t t-if="attendance_data">
+                                        <!-- Desktop Table View -->
+                                        <div class="table-responsive d-none d-md-block">
+                                            <table class="table table-hover mb-0">
+                                                <thead class="bg-light">
+                                                    <tr>
+                                                        <th class="border-0 py-3">
+                                                            <i class="fa fa-sign-in text-success me-1"></i>Check In
+                                                        </th>
+                                                        <th class="border-0 py-3">
+                                                            <i class="fa fa-sign-out text-danger me-1"></i>Check Out
+                                                        </th>
+                                                        <th class="border-0 py-3">
+                                                            <i class="fa fa-clock-o text-info me-1"></i>Worked Hours
+                                                        </th>
+                                                        <th class="border-0 py-3">
+                                                            <i class="fa fa-clock-o text-info me-1"></i>Worked Extra Hours
+                                                        </th>
+                                                        <th class="border-0 py-3 text-center">Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <t t-foreach="attendance_data" t-as="record">
+                                                        <tr>
+                                                            <td class="py-3">
+                                                                <div class="d-flex align-items-center">
+                                                                    <div class="bg-success rounded-circle p-2 me-2"
+                                                                         style="width: 8px; height: 8px;"></div>
+                                                                    <div>
+                                                                        <div class="font-weight-medium">
+                                                                            <t t-esc="record['check_in'].strftime('%d %b %Y')"/>
+                                                                        </div>
+                                                                        <small class="text-muted">
+                                                                            <t t-esc="record['check_in'].strftime('%I:%M %p')"/>
+                                                                        </small>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="py-3">
+                                                                <t t-if="record['check_out']">
+                                                                    <div class="d-flex align-items-center">
+                                                                        <div class="bg-danger rounded-circle p-2 me-2"
+                                                                             style="width: 8px; height: 8px;"></div>
+                                                                        <div>
+                                                                            <div class="font-weight-medium">
+                                                                                <t t-esc="record['check_out'].strftime('%d %b %Y')"/>
+                                                                            </div>
+                                                                            <small class="text-muted">
+                                                                                <t t-esc="record['check_out'].strftime('%I:%M %p')"/>
+                                                                            </small>
+                                                                        </div>
+                                                                    </div>
+                                                                </t>
+                                                                <t t-else="">
+                                                                    <span class="text-warning">
+                                                                        <i class="fa fa-clock-o me-1"></i>Still Working
+                                                                    </span>
+                                                                </t>
+                                                            </td>
+                                                            <td class="py-3">
+                                                                <span class="badge badge-info badge-pill px-3 py-2">
+                                                                    <i class="fa fa-clock-o me-1"></i>
+                                                                    <t t-esc="'%.2f hrs' % record['worked_hours']"/>
+                                                                </span>
+                                                            </td>
+                                                            <td class="py-3">
+                                                                <span class="badge badge-info badge-pill px-3 py-2">
+                                                                    <i class="fa fa-stopwatch me-1"></i>
+                                                                    <t t-esc="'%.2f hrs' % record['validated_overtime_hours']"/>
+                                                                </span>
+                                                            </td>
+                                                            <td class="py-3 text-center">
+                                                                <t t-if="record['check_out']">
+                                                                    <span class="badge badge-success">
+                                                                        <i class="fa fa-check me-1"></i>Complete
+                                                                    </span>
+                                                                </t>
+                                                                <t t-else="">
+                                                                    <span class="badge badge-warning">
+                                                                        <i class="fa fa-clock-o me-1"></i>In Progress
+                                                                    </span>
+                                                                </t>
+                                                            </td>
+                                                        </tr>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <!-- Pagination Controls -->
+                                        <t t-if="pager and pager.get('page_count', 0) > 1">
+                                            <div class="d-flex justify-content-center mt-4 mb-3">
+                                                <nav aria-label="Attendance pagination">
+                                                    <ul class="pagination">
+                                                        <!-- Previous Button -->
+                                                        <t t-if="pager.get('page_previous')">
+                                                            <li class="page-item">
+                                                                <a class="page-link"
+                                                                   t-att-href="pager['page_previous']['url']"
+                                                                   aria-label="Previous">
+                                                                </a>
+                                                            </li>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <li class="page-item disabled">
+                                                            </li>
+                                                        </t>
+
+                                                        <!-- Page Numbers -->
+                                                        <t t-foreach="pager.get('pages', [])" t-as="page_info">
+                                                            <t t-if="page_info.get('url')">
+                                                                <li class="page-item"
+                                                                    t-att-class="'active' if page_info.get('num') == pager.get('page', {}).get('num') else ''">
+                                                                    <a class="page-link" t-att-href="page_info['url']">
+                                                                        <t t-esc="page_info['num']"/>
+                                                                    </a>
+                                                                </li>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <li class="page-item active">
+                                                                    <span class="page-link">
+                                                                        <t t-esc="page_info['num']"/>
+                                                                    </span>
+                                                                </li>
+                                                            </t>
+                                                        </t>
+
+                                                        <!-- Next Button -->
+                                                        <t t-if="pager.get('page_next')">
+                                                            <li class="page-item">
+                                                                <a class="page-link"
+                                                                   t-att-href="pager['page_next']['url']"
+                                                                   aria-label="Next">
+                                                                </a>
+                                                            </li>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <li class="page-item disabled">
+                                                            </li>
+                                                        </t>
+                                                    </ul>
+                                                </nav>
+                                            </div>
+                                        </t>
+
+                                    </t>
+                                    <t t-if="not attendance_data and search_done">
+                                        <!-- Empty State -->
+                                        <div class="text-center py-5">
+                                            <div class="mb-4">
+                                                <i class="fa fa-calendar-times-o fa-4x text-muted"></i>
+                                            </div>
+                                            <h4 class="text-muted mb-2">No Attendance Records Found</h4>
+                                            <p class="text-muted mb-4">
+                                                No attendance records match your selected criteria.<br/>
+                                                Try adjusting your date range or check back later.
+                                            </p>
+                                            <a href="/fetch/attendance" class="btn btn-outline-primary">
+                                                <i class="fa fa-refresh me-1"></i>Refresh Page
+                                            </a>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary Statistics (if records exist) -->
+                    <t t-if="attendance_data">
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-light border-0">
+                                        <h5 class="card-title mb-0">
+                                            <i class="fa fa-bar-chart me-2"></i>Summary
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row text-center">
+                                            <div class="col-md-3 col-6 mb-3">
+                                                <div class="border-right">
+                                                    <h3 class="text-primary mb-1">
+                                                        <t t-esc="total_records or 0"/>
+                                                    </h3>
+                                                    <small class="text-muted">Total Days</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 col-6 mb-3">
+                                                <div class="border-right">
+                                                    <h3 class="text-primary mb-1">
+                                                        <t t-esc="leave_count"/>
+                                                    </h3>
+                                                    <small class="text-muted">Total Leaves</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 col-6 mb-3">
+                                                <div class="border-right">
+                                                    <h3 class="text-success mb-1">
+                                                        <t t-esc="'%.1f' % worked_hours"/>
+                                                    </h3>
+                                                    <small class="text-muted">Total Hours</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 col-6 mb-3">
+                                                <div class="border-right">
+                                                    <h3 class="text-info mb-1">
+                                                        <t t-esc="'%.1f' % (sum(record['worked_hours'] for record in attendance_data) / len(attendance_data))"/>
+                                                    </h3>
+                                                    <small class="text-muted">Avg Hours/Day</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
