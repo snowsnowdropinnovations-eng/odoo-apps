@@ -1,4 +1,5 @@
 import base64
+import json
 
 from odoo import http, fields, _
 from odoo.exceptions import ValidationError
@@ -11,8 +12,11 @@ class TimeOffController(http.Controller):
     @http.route('/all/time/off', type='http', auth='user', website=True, methods=['GET', 'POST'], csrf=True)
     def Retrieve_Time_Off_Data(self, **kwargs):
         all_types = []
-        employee_id = request.env['hr.employee'].search([('user_id', '=', request.env.uid)], limit=1)
-        allocated_recs = request.env['hr.leave.allocation'].search(
+        # Use sudo() for portal users or get employee_id from user
+        employee_id = request.env.user.employee_id or request.env['hr.employee'].sudo().search([('user_id', '=', request.env.uid)], limit=1)
+        if not employee_id:
+            raise ValidationError(_('No employee record found for the current user.'))
+        allocated_recs = request.env['hr.leave.allocation'].sudo().search(
             [('employee_id', '=', employee_id.id), ('state', 'in', ['validate', 'validate1'])])
         for x in allocated_recs:
             all_types.append({
@@ -22,7 +26,7 @@ class TimeOffController(http.Controller):
                 'leave_type': x.holiday_status_id.leave_type,
 
             })
-        unpaid_leave_id = request.env['hr.leave.type'].search([('name', 'ilike', 'Unpaid')], limit=1)
+        unpaid_leave_id = request.env['hr.leave.type'].sudo().search([('name', 'ilike', 'Unpaid')], limit=1)
         if any(x['id'] == unpaid_leave_id.id for x in all_types):
             print('Already unpaid leave')
         else:
@@ -30,44 +34,55 @@ class TimeOffController(http.Controller):
                 {'id': unpaid_leave_id.id, 'name': unpaid_leave_id.name, 'leave_type': unpaid_leave_id.leave_type, })
         print(f'Leave: {all_types} ')
 
-        # allocated and remaining and taken working here:------------------------------:---------------------------------------:
-        leave_summary = {}
-
-        for rec in allocated_recs:
-            leave_type = rec.holiday_status_id.leave_type
-            allocated_days = float(rec.number_of_days_display)
-            if leave_type not in leave_summary:
-                leave_summary[leave_type] = {'allocated': 0, 'taken': 0}
-            leave_summary[leave_type]['allocated'] += allocated_days
-
-        taken_leave_recs = request.env['hr.leave'].sudo().search(
-            [('employee_id', '=', employee_id.id), ('state', 'in', ['validate', 'validate1'])]
-        )
-        for rec in taken_leave_recs:
-            leave_type = rec.holiday_status_id.leave_type
-            duration_str = rec.duration_display
-            # Extract numeric value from duration_display (e.g., "8:00 hours" -> 8.0, "1 days" -> 1.0)
-            if 'hours' in duration_str.lower():
-                taken_value = float(duration_str.split(':')[0])
-            else:
-                taken_value = float(duration_str.split()[0])
-            # Convert to days if request_unit is 'hour'
-            taken_days = (
-                taken_value / 8
-                if rec.holiday_status_id.request_unit == 'hour'
-                else taken_value
-            )
-            if leave_type not in leave_summary:
-                leave_summary[leave_type] = {'allocated': 0, 'taken': 0}
-            leave_summary[leave_type]['taken'] += taken_days
-
-        leaves_info = [
-            {'Leave_type': leave_type, 'allocated': data['allocated'], 'taken': data['taken']}
-            for leave_type, data in leave_summary.items()
-        ]
-        print('Information: ', leaves_info)
-
-        # Ended Here ------------------------------------------------------------------- : ------------------------------------:
+        # Use Odoo's standard get_allocation_data method for accurate calculations
+        leaves_info = []
+        dashboard_leaves_info = []  # Separate list for dashboard cards
+        if employee_id:
+            # Get all leave types (both requiring and not requiring allocation)
+            leave_types = request.env['hr.leave.type'].sudo().search([
+                ('active', '=', True)
+            ])
+            
+            for leave_type in leave_types:
+                # Use Odoo's standard method to get allocation data
+                # This works for both types that require allocation and those that don't
+                try:
+                    allocation_data = leave_type.sudo().get_allocation_data(employee_id, fields.Date.today())
+                except:
+                    # If get_allocation_data fails for this type, skip it
+                    continue
+                
+                if employee_id in allocation_data and allocation_data[employee_id]:
+                    for lt_info in allocation_data[employee_id]:
+                        lt_name, lt_data, requires_allocation, lt_id = lt_info
+                        # Get leave_type field value if it exists
+                        leave_type_obj = request.env['hr.leave.type'].sudo().browse(lt_id)
+                        leave_type_value = getattr(leave_type_obj, 'leave_type', None) or lt_name
+                        
+                        remaining = round(lt_data.get('virtual_remaining_leaves', 0), 2)
+                        allocated = round(lt_data.get('max_leaves', 0), 2)
+                        taken = round(lt_data.get('leaves_taken', 0), 2)
+                        
+                        leave_info_dict = {
+                            'Leave_type': leave_type_value,
+                            'leave_type_name': lt_name,
+                            'leave_type_id': lt_id,
+                            'allocated': allocated,
+                            'taken': taken,
+                            'remaining': remaining,
+                            'remaining_class': 'text-danger' if remaining < 0 else 'text-success',
+                        }
+                        
+                        # Add to leaves_info for table (only if has allocation or is relevant)
+                        if allocated > 0 or remaining != 0:
+                            leaves_info.append(leave_info_dict)
+                        
+                        # Add to dashboard if it has any data (allocation, taken, or remaining)
+                        # Show all leave types that have any activity
+                        if allocated > 0 or taken > 0 or abs(remaining) > 0.01:
+                            dashboard_leaves_info.append(leave_info_dict)
+        
+        print('Allocation Information: ', leaves_info)
 
         env_user = request.env.uid
         time_offs = []
@@ -102,7 +117,7 @@ class TimeOffController(http.Controller):
             # Empty filter_by means no filtering (equivalent to "All")
 
             # Fetch time off records
-            time_off_recs = request.env['hr.leave'].search(domain)
+            time_off_recs = request.env['hr.leave'].sudo().search(domain)
 
             # Inside Retrive_Time_Off_Data method, update the time_offs.append block
             if time_off_recs:
@@ -173,6 +188,9 @@ class TimeOffController(http.Controller):
         elif not env_user:
             raise ValidationError(_('Please login to access this page'))
 
+        # Get error from session or URL params
+        error_message = kwargs.get('error') or request.session.pop('leave_update_error', None)
+        
         return request.render('sd_leave_request_portal.time_off_controller_portal_view_id', {
             'grouped_data': grouped_data,
             'group_by': group_by,
@@ -181,12 +199,14 @@ class TimeOffController(http.Controller):
             'data': time_offs,
             'all_types': all_types,
             'leaves_info': leaves_info,
+            'dashboard_leaves_info': dashboard_leaves_info,  # For dashboard cards
+            'error_message': error_message,
         })
 
     @http.route('/time/off/update/<int:leave_id>', type='http', auth='user', website=True, methods=['GET', 'POST'],
                 csrf=True)
     def Update_Time_Off_Data(self, leave_id, **kwargs):
-        leave = request.env['hr.leave'].browse(leave_id).exists()
+        leave = request.env['hr.leave'].sudo().browse(leave_id).exists()
         if not leave or leave.employee_id.user_id.id != request.env.uid:
             raise ValidationError(_('You do not have permission to update this leave request.'))
 
@@ -259,7 +279,7 @@ class TimeOffController(http.Controller):
                         (6, 0, leave.medical_attachment_ids.ids)]  # Retain existing if no new file
 
                 # Get the new leave type to check if it's "Sick"
-                new_leave_type = request.env['hr.leave.type'].browse(int(time_off_type))
+                new_leave_type = request.env['hr.leave.type'].sudo().browse(int(time_off_type))
                 clear_attachments = new_leave_type.leave_type != 'sick'  # Assuming leave_type is the field indicating "sick"
 
                 leave_vals = {
@@ -284,7 +304,39 @@ class TimeOffController(http.Controller):
                     if 'number_of_hours' in leave._fields:
                         leave_vals['number_of_hours'] = duration_hours
 
-                leave.write(leave_vals)
+                # Check allocation before updating using Odoo's standard logic
+                holiday_status = leave.holiday_status_id
+                # If leave type is being changed, get the new one
+                if 'holiday_status_id' in leave_vals:
+                    holiday_status = request.env['hr.leave.type'].sudo().browse(leave_vals['holiday_status_id'])
+                
+                if holiday_status and holiday_status.requires_allocation != 'no':
+                    # Save original values for rollback
+                    original_vals = {}
+                    for key in leave_vals.keys():
+                        if hasattr(leave, key):
+                            original_vals[key] = getattr(leave, key)
+                    
+                    # Write new values temporarily
+                    leave.write(leave_vals)
+                    
+                    try:
+                        # Validate allocation using Odoo's standard method
+                        leave._check_validity()
+                    except ValidationError as e:
+                        # Rollback to original values
+                        leave.write(original_vals)
+                        error_msg = str(e)
+                        # Check if it's an allocation error and show user-friendly message
+                        if 'allocation' in error_msg.lower() or 'no valid allocation' in error_msg.lower():
+                            error_msg = _("You do not have enough leave allocation. Please check your leave allocation.")
+                        # Store error in session to display on redirect
+                        request.session['leave_update_error'] = error_msg
+                        return request.redirect(f'/all/time/off?error={error_msg}')
+                else:
+                    # For leave types that don't require allocation, just update
+                    leave.write(leave_vals)
+                
                 print(f"Leave {leave.id} updated with attachments: {leave.medical_attachment_ids.ids}")  # Debug
 
             return request.redirect('/all/time/off')
@@ -293,7 +345,7 @@ class TimeOffController(http.Controller):
 
     @http.route('/time/off/cancel/<int:leave_id>', type='http', auth='user', website=True, methods=['POST'], csrf=True)
     def Cancel_Time_Off_Data(self, leave_id, **kwargs):
-        leave = request.env['hr.leave'].browse(leave_id).exists()
+        leave = request.env['hr.leave'].sudo().browse(leave_id).exists()
         if not leave or leave.employee_id.user_id.id != request.env.uid:
             raise ValidationError(_('You do not have permission to cancel this leave request.'))
 
@@ -306,8 +358,15 @@ class TimeOffController(http.Controller):
     @http.route('/create/time/off', type='http', auth='user', website=True, methods=['GET', 'POST'], csrf=True)
     def create_Time_Off_Data(self, **kwargs):
         all_types = []
-        employee_id = request.env['hr.employee'].search([('user_id', '=', request.env.uid)], limit=1)
-        allocated_recs = request.env['hr.leave.allocation'].search(
+        # Use sudo() for portal users or get employee_id from user
+        employee_id = request.env.user.employee_id or request.env['hr.employee'].sudo().search([('user_id', '=', request.env.uid)], limit=1)
+        if not employee_id:
+            return request.render('sd_leave_request_portal.time_off_create_form_template', {
+                'all_types': [],
+                'allocation_info': {},
+                'error': _('No employee record found for the current user.')
+            })
+        allocated_recs = request.env['hr.leave.allocation'].sudo().search(
             [('employee_id', '=', employee_id.id), ('state', 'in', ['validate', 'validate1'])])
         for x in allocated_recs:
             all_types.append({
@@ -316,14 +375,38 @@ class TimeOffController(http.Controller):
                 'type': x.holiday_status_id.leave_type,
             })
 
-        unpaid_leave_id = request.env['hr.leave.type'].search([('name', 'ilike', 'Unpaid')], limit=1)
+        unpaid_leave_id = request.env['hr.leave.type'].sudo().search([('name', 'ilike', 'Unpaid')], limit=1)
         if not any(x['id'] == unpaid_leave_id.id for x in all_types):
             all_types.append(
                 {'id': unpaid_leave_id.id, 'name': unpaid_leave_id.name, 'type': unpaid_leave_id.leave_type})
         print(f'Leave: {all_types}')
+        
+        # Get allocation data for client-side validation
+        allocation_info = {}
+        if employee_id:
+            leave_types = request.env['hr.leave.type'].sudo().search([('active', '=', True)])
+            for leave_type in leave_types:
+                try:
+                    allocation_data = leave_type.sudo().get_allocation_data(employee_id, fields.Date.today())
+                    if employee_id in allocation_data and allocation_data[employee_id]:
+                        for lt_info in allocation_data[employee_id]:
+                            lt_name, lt_data, requires_allocation, lt_id = lt_info
+                            if lt_id == leave_type.id:
+                                allocation_info[str(lt_id)] = {
+                                    'remaining': round(lt_data.get('virtual_remaining_leaves', 0), 2),
+                                    'allocated': round(lt_data.get('max_leaves', 0), 2),
+                                    'taken': round(lt_data.get('leaves_taken', 0), 2),
+                                    'requires_allocation': requires_allocation != 'no',
+                                    'allows_negative': leave_type.allows_negative,
+                                    'max_allowed_negative': leave_type.max_allowed_negative or 0,
+                                }
+                                break
+                except:
+                    continue
 
         if request.httprequest.method == 'POST':
-            employee_id = request.env['hr.employee'].search([('user_id', '=', request.env.uid)], limit=1)
+            # Use sudo() for portal users or get employee_id from user
+            employee_id = request.env.user.employee_id or request.env['hr.employee'].sudo().search([('user_id', '=', request.env.uid)], limit=1)
             if not employee_id:
                 raise ValidationError(_('No employee record found for the current user.'))
 
@@ -410,8 +493,117 @@ class TimeOffController(http.Controller):
                 leave_vals['request_hour_from'] = from_time_dt.hour + from_time_dt.minute / 60.0
                 leave_vals['request_hour_to'] = to_time_dt.hour + to_time_dt.minute / 60.0
 
-            request.env['hr.leave'].create(leave_vals)
+            # Check allocation before creating using Odoo's standard logic
+            holiday_status = request.env['hr.leave.type'].sudo().browse(time_off_type)
+            if holiday_status.requires_allocation != 'no':
+                # First, check if employee has any allocation for this leave type
+                try:
+                    allocation_data = holiday_status.sudo().get_allocation_data(employee_id, request_date_from.date())
+                except:
+                    allocation_data = {}
+                
+                # Check if employee has allocation
+                if employee_id not in allocation_data or not allocation_data[employee_id] or len(allocation_data[employee_id]) == 0:
+                    # No allocation found - show warning
+                    error_msg = _("You do not have enough leave allocation. Please check your leave allocation.")
+                    return request.render('sd_leave_request_portal.time_off_create_form_template', {
+                        'all_types': all_types,
+                        'error': error_msg
+                    })
+                
+                # Additional check: verify allocation has valid data
+                emp_allocation_data = allocation_data[employee_id]
+                has_valid_allocation = False
+                for lt_info in emp_allocation_data:
+                    lt_name, lt_data, requires_allocation, lt_id = lt_info
+                    if lt_id == holiday_status.id:  # Match the selected leave type
+                        max_leaves = lt_data.get('max_leaves', 0)
+                        if max_leaves > 0:  # Has some allocation
+                            has_valid_allocation = True
+                            break
+                
+                if not has_valid_allocation:
+                    # No valid allocation found for this specific leave type
+                    error_msg = _("You do not have enough leave allocation. Please check your leave allocation.")
+                    return request.render('sd_leave_request_portal.time_off_create_form_template', {
+                        'all_types': all_types,
+                        'error': error_msg
+                    })
+                
+                # Check if there's remaining leave available
+                emp_allocation_data = allocation_data[employee_id]
+                if emp_allocation_data:
+                    # Find the allocation info for this specific leave type
+                    lt_info = None
+                    for info in emp_allocation_data:
+                        lt_name, lt_data, requires_allocation, lt_id = info
+                        if lt_id == holiday_status.id:  # Match the selected leave type
+                            lt_info = info
+                            break
+                    
+                    if not lt_info:
+                        # No matching leave type found in allocation data
+                        error_msg = _("You do not have enough leave allocation. Please check your leave allocation.")
+                        return request.render('sd_leave_request_portal.time_off_create_form_template', {
+                            'all_types': all_types,
+                            'error': error_msg
+                        })
+                    
+                    lt_name, lt_data, requires_allocation, lt_id = lt_info
+                    virtual_remaining = lt_data.get('virtual_remaining_leaves', 0)
+                    
+                    # Calculate requested days
+                    if request_unit_half:
+                        requested_days = 0.5
+                    elif request_unit_hours and from_time and to_time:
+                        requested_days = duration_hours / 8.0  # Convert hours to days
+                    else:
+                        # Calculate days from date range
+                        delta = request_date_to.date() - request_date_from.date()
+                        requested_days = delta.days + 1
+                    
+                    # Check if remaining is sufficient (considering allows_negative)
+                    if not holiday_status.allows_negative:
+                        # If negative not allowed, check if remaining is enough
+                        if virtual_remaining < requested_days:
+                            error_msg = _("You do not have enough leave allocation. Please check your leave allocation.")
+                            return request.render('sd_leave_request_portal.time_off_create_form_template', {
+                                'all_types': all_types,
+                                'error': error_msg
+                            })
+                    else:
+                        # If negative allowed, check max allowed negative
+                        max_excess = holiday_status.max_allowed_negative or 0
+                        if virtual_remaining < (requested_days - max_excess):
+                            error_msg = _("You do not have enough leave allocation. Please check your leave allocation.")
+                            return request.render('sd_leave_request_portal.time_off_create_form_template', {
+                                'all_types': all_types,
+                                'error': error_msg
+                            })
+                
+                # Create the record and validate using Odoo's standard method
+                leave_record = request.env['hr.leave'].sudo().create(leave_vals)
+                try:
+                    # Double-check with Odoo's validation
+                    leave_record.sudo()._check_validity()
+                except ValidationError as e:
+                    # If validation fails, delete the record and show error
+                    leave_record.unlink()
+                    error_msg = str(e)
+                    # Check if it's an allocation error and show user-friendly message
+                    if 'allocation' in error_msg.lower() or 'no valid allocation' in error_msg.lower() or 'not have' in error_msg.lower():
+                        error_msg = _("You do not have enough leave allocation. Please check your leave allocation.")
+                    return request.render('sd_leave_request_portal.time_off_create_form_template', {
+                        'all_types': all_types,
+                        'error': error_msg
+                    })
+            else:
+                # For leave types that don't require allocation, just create
+                leave_record = request.env['hr.leave'].sudo().create(leave_vals)
 
             return request.redirect('/all/time/off')
 
-        return request.render('sd_leave_request_portal.time_off_create_form_template', {'all_types': all_types})
+        return request.render('sd_leave_request_portal.time_off_create_form_template', {
+            'all_types': all_types,
+            'allocation_info': allocation_info,
+        })

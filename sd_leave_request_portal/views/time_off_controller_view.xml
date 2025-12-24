@@ -20,6 +20,65 @@
     <template id="time_off_controller_portal_view_id" name="View All Time Offs">
         <t t-call="website.layout">
             <div class="container my-5">
+                <!-- Time Off Dashboard Cards -->
+                <style>
+                    .time-off-dashboard-card {
+                        border-radius: 12px;
+                        transition: transform 0.2s, box-shadow 0.2s;
+                        border: 1px solid #e9ecef;
+                    }
+                    .time-off-dashboard-card:hover {
+                        transform: translateY(-5px);
+                        box-shadow: 0 8px 16px rgba(108, 92, 231, 0.15) !important;
+                    }
+                    .time-off-number {
+                        font-size: 3.5rem;
+                        font-weight: bold;
+                        color: #6c5ce7;
+                        line-height: 1;
+                    }
+                    .time-off-label {
+                        color: #6c5ce7;
+                        font-size: 0.85rem;
+                        font-weight: 500;
+                        letter-spacing: 0.5px;
+                    }
+                </style>
+                <div class="row mb-4" t-if="dashboard_leaves_info and len(dashboard_leaves_info) > 0">
+                    <t t-foreach="dashboard_leaves_info" t-as="leave_card">
+                        <div class="col-lg-4 col-md-6 col-sm-6 mb-4">
+                            <div class="card h-100 time-off-dashboard-card shadow-sm border-0">
+                                <div class="card-body text-center p-4 d-flex flex-column justify-content-between">
+                                    <div>
+                                        <h5 class="card-title mb-3" style="color: #2d3436; font-weight: 600; font-size: 1.1rem;">
+                                            <t t-esc="leave_card.get('leave_type_name', leave_card.get('Leave_type', ''))"/>
+                                        </h5>
+                                        <div class="mb-3">
+                                            <t t-set="icon_class" t-value="'fa-umbrella-beach' if 'paid' in leave_card.get('leave_type_name', '').lower() or 'annual' in leave_card.get('Leave_type', '').lower() or 'vacation' in leave_card.get('leave_type_name', '').lower() else 'fa-balance-scale' if 'compensatory' in leave_card.get('leave_type_name', '').lower() or 'compensatory' in leave_card.get('Leave_type', '').lower() else 'fa-home' if 'work from home' in leave_card.get('leave_type_name', '').lower() or 'wfh' in leave_card.get('leave_type_name', '').lower() or 'work from' in leave_card.get('leave_type_name', '').lower() else 'fa-heartbeat' if 'sick' in leave_card.get('leave_type_name', '').lower() or 'sick' in leave_card.get('Leave_type', '').lower() else 'fa-calendar-check'"/>
+                                            <i t-attf-class="fa #{icon_class}" style="font-size: 2.5rem; color: #6c5ce7; opacity: 0.8;"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="mb-2">
+                                            <span class="time-off-number">
+                                                <t t-esc="int(leave_card.get('remaining', 0))"/>
+                                            </span>
+                                        </div>
+                                        <div class="time-off-label">
+                                            DAYS AVAILABLE
+                                            <i class="fa fa-question-circle ms-1" 
+                                               style="font-size: 0.75rem; cursor: help; opacity: 0.7;" 
+                                               data-bs-toggle="tooltip" 
+                                               data-bs-placement="top"
+                                               t-att-title="'Total Allocated: ' + str(leave_card.get('allocated', 0)) + ' days | Taken: ' + str(leave_card.get('taken', 0)) + ' days'"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+
                 <div class="card">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">Employee Time Off</h4>
@@ -28,6 +87,13 @@
                         </a>
                     </div>
                     <div class="card-body">
+                        <!-- Error Message Display -->
+                        <t t-if="error_message">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <strong><t t-esc="error_message"/></strong>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </t>
                         <!-- Filter, Sort, and Group Controls -->
                         <form method="GET" action="/all/time/off" class="row g-3 mb-4">
                             <div class="col-md-3">
@@ -918,6 +984,12 @@
                     });
                     initializeModalState(timeOffId);
                     });
+                    
+                    // Initialize tooltips for dashboard cards
+                    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                    });
                     });
                 </script>
 
@@ -934,20 +1006,28 @@
                                 <thead>
                                     <tr>
                                         <th>Leave Type</th>
-                                        <th>Allocated Leaves</th>
-                                        <th>Requested Leaves</th>
+                                        <th>Total Allocated Leaves</th>
+                                        <th>Leaves Taken</th>
+                                        <th>Remaining Leaves</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <t t-foreach="leaves_info" t-as="type">
                                         <tr>
-                                            <td><t t-esc="type['Leave_type']"/></td>
-                                            <td><t t-esc="type['allocated']"/></td>
-                                            <td><t t-esc="type['taken']"/></td>
+                                            <td><t t-esc="type.get('leave_type_name', type.get('Leave_type', ''))"/></td>
+                                            <td><t t-esc="type.get('allocated', 0)"/></td>
+                                            <td><t t-esc="type.get('taken', 0)"/></td>
+                                            <td>
+                                                <t t-set="remaining_val" t-value="type.get('remaining', 0)"/>
+                                                <t t-set="remaining_class" t-value="type.get('remaining_class', 'text-success')"/>
+                                                <span t-att-class="remaining_class">
+                                                    <t t-esc="remaining_val"/>
+                                                </span>
+                                            </td>
                                         </tr>
                                     </t>
                                     <tr t-if="not leaves_info">
-                                        <td colspan="3" class="text-center py-5">
+                                        <td colspan="4" class="text-center py-5">
                                             <div class="empty-state">
                                                 <i class="fa fa-calendar fa-3x text-muted mb-3"></i>
                                                 <h5>No Allocated Leaves Found</h5>
